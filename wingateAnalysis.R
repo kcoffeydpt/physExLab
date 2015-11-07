@@ -17,6 +17,7 @@ library(tidyr)
 
 # Load data  
 wingate<-read.csv("Wingate.csv")
+wingate<-mutate(wingate,power=(Resistance..kg.*(ActualRPM/12))/.0833)
 
 
 #Subset rows that have only the summary data from the test
