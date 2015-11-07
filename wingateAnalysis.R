@@ -14,18 +14,18 @@ setwd("~/physExLab")
 
 library(dplyr)
 library(tidyr)
+library(ggplot2)
 
 # Load data  
-wingate<-read.csv("Wingate.csv")
-wingate<-mutate(wingate,power=(Resistance..kg.*(ActualRPM/12))/.0833)
+data<-read.csv("allData.csv")
+data<- select(data,ID, seconds,resistance_kg,rpm,revolutions,distance_m,force_n,power_watts,peakPower,meanPower,minPower,fatigueIndex,predBodyFat,Weight.kg.,Sex,Height.cm.,Wall.Sits..seconds.,LewisPower.W.,SayerEquation.W.,age.years.)
 
+data$stage<-as.factor(data$seconds)
 
-#Subset rows that have only the summary data from the test
-# first pull rows with a valid number for mean power
-wingateSummary <-filter(wingate,Mean.Power>0)
-# then pull columns with summary data columns
-wingateSummary <-select(wingateSummary,ID, Peak.Power,Mean.Power,Min.Power,Fatigue.Index)
+qplot(seconds,power_watts, data=data, geom=c("point", "smooth"),method="lm", colour=factor(ID),se=FALSE)
 
-wingateData<-select(wingate,ID, Seconds,Resistance..kg.,RPM,ActualRPM,Force..N.,Revolutions,Power..watts.)
+qplot(seconds,power_watts, data=data, geom=c("point", "smooth"), colour=factor(ID),se=FALSE)
 
-hist(wingateSummary$Peak.Power)
+qplot(seconds,power_watts, data=data, geom=c("point", "smooth"),method="lm", colour=factor(Sex))
+
+qplot(stage,power_watts, data=data, geom=c("boxplot"),colour=factor(Sex))

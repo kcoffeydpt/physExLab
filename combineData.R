@@ -51,8 +51,23 @@ write.csv(combinedData, file = "combinedData.csv")
 # Wingate is read in - but not combined with the other data at this point
 wingate<-read.csv("Wingate.csv")
 
+# Create a wingate dataframe what includes the summary values for every row by ID
+# Subset rows that have only the summary data from the test
+# first pull rows with a valid number for mean power
+wingateSummary <-filter(wingate,meanPower>0)
+# then pull columns with summary data columns
+wingateSummary <-select(wingateSummary,ID, peakPower,meanPower,minPower,fatigueIndex)
+
+# then select the columns that have repeated data
+wingateData<-select(wingate,ID, seconds,resistance_kg,rpm,revolutions,distance_m,force_n,power_watts)
+# then combine these data sets with left join so that there is a summary value for every repeated measure
+wingate<-left_join(wingateData, wingateSummary, by="ID")
+
 #combine wingate and combinedData with a left join function
 
 allData<-left_join(wingate, combinedData, by="ID")
 write.csv(allData, file = "allData.csv")
+
+
+
 
