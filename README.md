@@ -2,6 +2,8 @@
 
 Data and analysis files for the Physiology of Exercise Lab at Plymouth State University
 
+**Note that this is a private repository - intended only for use by students in the physiology of exercise lab at Plymouth State University - if you are a student in that lab and you want access follow the steps below.**
+
 Students in the lab that are interested in using any of the data below should:
 
 1. Join Github (free) https://github.com/
