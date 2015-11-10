@@ -17,7 +17,7 @@ There is also a great resource for starting out (free) on the Data Scientist Too
 
 ## Purpose
 
-Students can use any of these files for their second lab report - or can continue to use the data we collect in lab though I anticipate those reports will take a focus on one or a few subjects as opposed to on many subjects. If you are interested in a project on many subjects the data sets attached are your best approach. 
+Students can use any of these files for their second lab report - or can continue to use the data we collect in lab. Reports based on data collected in lab will need to focus on trends within one or two subjects as opposed to looking at patterns both within and between subjects. If you are interested in a project that looks at trends both within and between subjects the data sets attached will be your best approach. 
 
 If you know of freely available (open) data sets that you are interested in using - just let me know and I can check them out, possibly even archive them here for future use.
 
