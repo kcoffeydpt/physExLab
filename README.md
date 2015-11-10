@@ -2,8 +2,13 @@
 
 Data and analysis files for the Physiology of Exercise Lab at Plymouth State University
 
+Students can use any of these files for their second lab report - or can continue to use the data we collect in lab though I anticipate those reports will take a focus on one or a few subjects as opposed to on many subjects. If you are interested in a project on many subjects the data sets attached are your best approach. 
+
+If you know of freely available (open) data sets that you are interested in using - just let me know and I can check them out, possibly even archive them here for future use.
+
+
 #### Issues
-1. The power values for the wingate are far to high, need to figure out what the problem with that data is
+1. Resolved - the attached files are now fixed (The power values for the wingate are far to high, need to figure out this problem)
 
 ### Class data files
 All files can be linked through the subject ID number
