@@ -28,7 +28,7 @@ If you want to use one of these sets of data then I think it is only natural for
 #### Issues
 1. Resolved - the attached files are now fixed (The power values for the wingate are far to high, need to figure out this problem)
 
-### Class data files
+## Class data files
 All files can be linked through the subject ID number
 
 #### Data files (csv)
@@ -44,16 +44,18 @@ All files can be linked through the subject ID number
 #### Analysis files (in R)
 1. combineData.R is an R script that reads in the data from different labs, cleans it up a bit, and then combines all the data files from separate labs, joins them by "ID". Creates a "combinedData.csv" file that contains one row per subject and does not include the wingate test; whereas the "allData.csv" file includes the wingate so has 6 rows per subject for the subjects that completed the wingate 
 
-### Astrand_1964 data 
+## Astrand_1964 data 
 
 Data on aerobic capacity measures from classic (and existing) published paperand publically available data by Astrand et al in 1954
 
 This includes data on the cardiovascular components of the Fick equation for VO2; as well as indirect calorimetry measures of VO2 during an incremental exercise test to max in a sample of 23 healthy college age subjects
 
-### NHL Combine Data
+## NHL Combine Data
 
 Data from the NHL combine that is available online at
 
 http://centralscouting.nhl.com/link3/cs/combine.nsf/Attachments/CombineResultsSpreadsheet/$FILE/combine-results.xls
 
+## Max VO2 testing Data
 
+Data from max VO2 tests performed on the treadmill in 25 college aged males 
