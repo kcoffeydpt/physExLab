@@ -14,7 +14,7 @@ Students that are interested in using any of the data below should:
 4. Fork the repo so it is set up in your Github account
 5. Either set up Git on your computer (https://git-scm.com/), or just use Github 
 
-For #3 and #4 you may want to watch the Github tutorials (https://github.com/)
+For #5 and #6 you may want to watch the Github tutorials (https://github.com/)
 
 There is also a great resource for starting out (free) on the Data Scientist Toolbox Github page: https://datasciencespecialization.github.io/toolbox/
 
@@ -67,4 +67,4 @@ Data from max VO2 tests performed on the treadmill in 25 college aged males
 
 # Ideas for projects (data collection projects)
 
-1. Step test that controls for the impact of height: I have never thought that the step bench tests should vary bench height based on sex; but rather should vary based on height. Perhaps it's because I am a 65 inch male and I would often watch 70 inch women using a step bench shorter than mine and wonder what was going on with this picture.....
+1. Step test that controls for the impact of height: I have never thought that the step bench tests should vary bench height based on sex; but rather should vary based on height. Perhaps it's because I am a 65 inch male and I would often watch 70 inch women using a step bench shorter than mine and wonder what was going on with this picture. The idea is that if we can add height to the equation for prediction we may be able to use one step height for men and women, my hypothesis is that height would be an interaction term, changing the slope of the relationship between estimated peak VO2 and post test HR slightly, but enough to matter. This might be a nice multi-semester, multi-lab, multi-site project.
