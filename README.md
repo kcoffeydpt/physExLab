@@ -30,14 +30,11 @@ If you know of freely available (open) data sets that you are interested in usin
 
 If you want to use one of these sets of data then I think it is only natural for me (or your professor) to help you with the analysis if you are interested. We should communicate about what you would like to do and the best way to analyze the data to answer the questions you find interesting. It is common for researchers to collaborate with a data analyst for their project. So, in this situation, consider me your data analyst consultant. Depending on the question you are interested in answering, I may end up doing the analysis for you and helping you with the interpretation. But you remain ultimately responsible for writing the report.
 
-#### Issues
-1. Resolved - the attached files are now fixed (The power values for the wingate are far to high, need to figure out this problem)
-
 # Folders
 
 ## PhysExFall2015
 
-Data from class held fall semester 2015
+Data from class held fall semester 2015 - see folder for more details
 
 ## Astrand_1964 
 
@@ -55,9 +52,13 @@ http://centralscouting.nhl.com/link3/cs/combine.nsf/Attachments/CombineResultsSp
 
 Data from max VO2 tests performed on the treadmill in 25 college aged males 
 
+See folder for more details
+
 ## CollinsExTests
 
 Data from exercise tests on myself over the past couple of years (can't find data from previous years testing)
+
+See folder for more details
 
 
 # Ideas for projects (data collection projects)
