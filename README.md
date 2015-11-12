@@ -1,19 +1,24 @@
 # physExLab repository (repo)
 
-Data and analysis files for the Physiology of Exercise Lab at Plymouth State University
+Data and analysis files for Physiology of Exercise Lab
 
-**Note that this is a private repository - intended only for use by students in the physiology of exercise lab at Plymouth State University - if you are a student in that lab and you want access follow the steps below.**
+**Note that this is a private repository - if you are a Professor of Exercise Physiology (or related field) and you would like to contribute to this repo please let me know. If you are a student in a Physiology of Exercise lab (or class) and you would like to request access follow the steps below.**
 
-Students in the lab that are interested in using any of the data below should:
+smcollins1@plymouth.edu
 
-1. Join Github (free) https://github.com/
-2. Send me their Github username so I can add them as a collaborator to the repository
-3. Fork the repo so it is set up in your Github account
-4. Either set up Git on your computer (https://git-scm.com/), or just use Github 
+Students that are interested in using any of the data below should:
+
+1. Send me an email requesting permission (if you are taking the class with me at PSU you can skip this step), please cc your professor in the email
+2. Join Github (free) https://github.com/
+3. Send me your Github username so I can add you as a collaborator to the repository
+4. Fork the repo so it is set up in your Github account
+5. Either set up Git on your computer (https://git-scm.com/), or just use Github 
 
 For #3 and #4 you may want to watch the Github tutorials (https://github.com/)
 
 There is also a great resource for starting out (free) on the Data Scientist Toolbox Github page: https://datasciencespecialization.github.io/toolbox/
+
+#### Adding curated data: if you would like to collaborate by adding curated data we can talk about how to do this without having to create too many branches in the repository (i.e. you send it to me and I can add it to the main branch, giving you full attribution)
 
 ## Purpose
 
@@ -23,7 +28,7 @@ If you know of freely available (open) data sets that you are interested in usin
 
 ### Workflow 
 
-If you want to use one of these sets of data then I think it is only natural for me to help you with the analysis. We should communicate about what you would like to do and the best way to analyze the data to answer the questions you find interesting. It is common for researchers to collaborate with a data analyst for their project. So, in this situation, consider me your data analyst consultant. Depending on the question you are interested in answering, I may end up doing the analysis for you and helping you with the interpretation. But you remain ultimately responsible for writing the report.
+If you want to use one of these sets of data then I think it is only natural for me (or your professor) to help you with the analysis if you are interested. We should communicate about what you would like to do and the best way to analyze the data to answer the questions you find interesting. It is common for researchers to collaborate with a data analyst for their project. So, in this situation, consider me your data analyst consultant. Depending on the question you are interested in answering, I may end up doing the analysis for you and helping you with the interpretation. But you remain ultimately responsible for writing the report.
 
 #### Issues
 1. Resolved - the attached files are now fixed (The power values for the wingate are far to high, need to figure out this problem)
@@ -59,3 +64,7 @@ http://centralscouting.nhl.com/link3/cs/combine.nsf/Attachments/CombineResultsSp
 ## Max VO2 testing Data
 
 Data from max VO2 tests performed on the treadmill in 25 college aged males 
+
+# Ideas for projects (data collection projects)
+
+1. Step test that controls for the impact of height: I have never thought that the step bench tests should vary bench height based on sex; but rather should vary based on height. Perhaps it's because I am a 65 inch male and I would often watch 70 inch women using a step bench shorter than mine and wonder what was going on with this picture.....
