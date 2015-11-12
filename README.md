@@ -34,7 +34,16 @@ If you want to use one of these sets of data then I think it is only natural for
 
 ## PhysExFall2015
 
-Data from class held fall semester 2015 - see folder for more details
+Data from class held fall semester 2015
+
+Includes data on:
+Pre test data - PAR-Q and other general health and exercise information
+Basic data - height, weight, sex and age
+Body composition - estimated percent body fat based on skin fold measures
+Muscular fitness - grip strength, push up reps, wall sits
+Flexibility - sit and reach, shoulder elevation, back scratch test
+Power - vertical jump and push up reps in 15 seconds
+Wingate - tested on a subsample of the class using a Monark Wingate equipped bike with magnet released load with a subject initiated trigger for sudden loading at the moment of test starting with computer connection for counting repetitions during test
 
 ## Astrand_1964 
 
@@ -48,17 +57,16 @@ Data from the NHL combine that is available online at
 
 http://centralscouting.nhl.com/link3/cs/combine.nsf/Attachments/CombineResultsSpreadsheet/$FILE/combine-results.xls
 
+Includes data on Wingate, vertical jumps, and max bike VO2 testing, as well as several strength, flexibility, coordination and anthropometric variables in about 100 athletes
+
 ## MaxVO2testData
 
-Data from max VO2 tests performed on the treadmill in 25 college aged males 
-
-See folder for more details
+Breath by breath exercise test data from max VO2 tests performed on the treadmill in 25 college aged males using a Sensomedics VMax 229 metabolic cart; includes all possible output from the system
 
 ## CollinsExTests
 
 Data from exercise tests on myself over the past couple of years (can't find data from previous years testing)
 
-See folder for more details
 
 
 # Ideas for projects (data collection projects)
