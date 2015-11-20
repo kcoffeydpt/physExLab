@@ -6,6 +6,8 @@ Data and analysis files for Physiology of Exercise Lab
 
 smcollins1@plymouth.edu
 
+**New** In the next few days I am going to start adding possible questions you could address with analysis of data within the various datasets curated and available in this repository. As this is done I will add a comment to this main readme file and subsequently the project page.
+
 Students that are interested in using any of the data below should:
 
 1. Send me an email requesting permission (if you are taking the class with me at PSU you can skip this step), please cc your professor in the email
@@ -50,6 +52,8 @@ Wingate - tested on a subsample of the class using a Monark Wingate equipped bik
 Data on aerobic capacity measures from classic (and existing) published paperand publically available data by Astrand et al in 1954
 
 This includes data on the cardiovascular components of the Fick equation for VO2; as well as indirect calorimetry measures of VO2 during an incremental exercise test to max in a sample of 23 healthy college age subjects
+
+Includes a README.md file has the variables and some ideas as well as some possible questions
 
 ## NHLcombineData
 
