@@ -17,6 +17,7 @@ Underlying this analysis is the belief that balanced and similiar training betwe
 ```{r}
 # Load necessary R packages
 library(dplyr) #For data manipulation
+library(reshape2) #For data manipulation related to plotting
 library(ggplot2) #For plotting
 library(pastecs) #For descriptive statistics
 
@@ -32,8 +33,11 @@ nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
 #Create aerobic test peak watts / kg variable
 nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
 
+#Create Lewis average watts / kg
+nhldata<-mutate(nhldata, LewisAvg_.Pause_watts_kg= LewisAvg_.Pause_watts/Weight_kg)
+
 #Create dataframe with only the variables we are interested in
-nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg, LewisAvg_.Pause_watts)
+nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg, LewisAvg_.Pause_watts, LewisAvg_.Pause_watts_kg)
 ```
 
 Here is a summary of the resulting dataframe. As you can see there are missing values in most variables.
@@ -52,20 +56,114 @@ str(nhldata)
 summary(nhldata)
 ```
 
-
-
-First a descriptive summary of the variables of interest:
+Descriptive summary of the variables of interest:
 ```{r}
 options(scipen=100) #supresses scientific notation of output
 options(digits=2) #limits output to 2 significant digits
 stat.desc(nhldata, basic=F) #runs basic stats
 ```
 
+A look at the univariate distributions. These are separated out to account for the different Y axis scaling - there are other ways to deal with scaling but for now this seemed the best way (comparing apples to apples on the Y axes of all of these graphs)
 
-You can also embed plots, for example:
+Decided to use Boxplots - The box plot (a.k.a. box and whisker diagram) is a standardized way of displaying the distribution of data based on the five number summary: minimum, first quartile, median, third quartile, and maximum. Outliers are plotted as individual points.  
 
-```{r, echo=FALSE}
-plot(cars)
+Data with the common Y axis of Watts:
+```{r}
+watts<-select(nhldata,LewisAvg_.Pause_watts, WingatePeak_Watts,VO2max_watts)
+ggplot(melt(watts), aes(x = variable, y = value)) + geom_boxplot() 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Data with the common Y axis of Watts/kg:
+```{r}
+watts_kg<-select(nhldata,LewisAvg_.Pause_watts_kg, PeakWingate_W_kg, VO2max_watts_kg)
+ggplot(melt(watts_kg), aes(x = variable, y = value)) + geom_boxplot() 
+```
+
+Data with the common Y axis of oxygen consumption (one for L/min and one for L/kg/min):
+```{r}
+vo2l<-select(nhldata,VO2max_l_min)
+vo2lkg<-select(nhldata,VO2max_ml_kg_min)
+ggplot(melt(vo2l), aes(x = variable, y = value)) + geom_boxplot() 
+ggplot(melt(vo2lkg), aes(x = variable, y = value)) + geom_boxplot() 
+```
+
+Next we can compare bivariate distributions (i.e. scatter plots) to look at associations. This first draft will only include the scatter plots without assumptions of the best approach to fitting the data with a function (i.e. linear model).
+
+There is clearly going to be a strong linear relationship between VO2max in L/min and in L/kg/min:
+```{r}
+qplot(VO2max_l_min,VO2max_ml_kg_min,data=nhldata,geom=c("point"))
+```
+
+To help visualize what is happenning (why there is variability) we can weight the points based on the players weight - so that larger points indicate a heavier player. As you can see - heavier players may have larger VO2 max in L/min, but they have lower VO2 max in ml/kg/min - which makes sense.
+```{r}
+qplot(VO2max_l_min,VO2max_ml_kg_min,data=nhldata,geom=c("point"),size = Weight_kg)
+```
+
+VO2 L/min and VO2 watts - here I have watts on the X axis because technically the power being produced is a determinant of the oxygen need (and therefore consumed). One thing to note is that VO2 max watts seems to be a factor variable (not continuous), this is because of the mode of testing the players. They use a Monark bike and each stage of the max test is a pre determined power. So the max watts achieved is based on the state. Therefore, variation in actual watts due to variations in pedal RPMs from the RPMs required in the test would not be captured.
+```{r}
+qplot(VO2max_watts, VO2max_l_min,data=nhldata,geom=c("point"))
+```
+
+Here we look at the same plot as above but with the points weighted based on player weight. There is a much less clear pattern than the plot of VO2 L/min and VO2 ml/kg/min when weighting based on weight.
+```{r}
+qplot(VO2max_watts, VO2max_l_min,data=nhldata,geom=c("point"),size = Weight_kg)
+```
+
+Wingate power - comparision between Watts and Watts/Kg:
+```{r}
+qplot(WingatePeak_Watts, PeakWingate_W_kg,data=nhldata,geom=c("point"))
+```
+
+Wingate power - comparision between Watts and Watts/Kg, when weighting the points based on weight, just like in VO2, it is clear that those that have more mass have greater Watts, but not necessarily greater Watts/Kg.
+
+```{r}
+qplot(WingatePeak_Watts, PeakWingate_W_kg,data=nhldata,geom=c("point"),size = Weight_kg)
+```
+
+
+One last set of "getting familiar with the data" analysis within each major variable. Comparing vertical jump average power watts to watts/kg. Expect the same as above - but a useful exercise in getting familiar with the data. As above - first without weight based on weight, and then with such weighting.
+
+```{r}
+qplot(LewisAvg_.Pause_watts, LewisAvg_.Pause_watts_kg,data=nhldata,geom=c("point"))
+```
+
+```{r}
+qplot(LewisAvg_.Pause_watts, LewisAvg_.Pause_watts_kg,data=nhldata,geom=c("point"),size = Weight_kg)
+```
+
+Now it is time to get to the tasks:
+1. Compare Wingate peak watts to VO2 max watts 
+```{r}
+qplot(WingatePeak_Watts, VO2max_watts,data=nhldata,geom=c("point"))
+```
+
+2. Compare VO2 max ml kg min to peak wingate watt kg
+```{r}
+qplot(PeakWingate_W_kg, VO2max_ml_kg_min,data=nhldata,geom=c("point"))
+```
+
+3. Compare lewis average pause watts to the peak watts and to VO2 max watts to see if there is any relationships and if jump capacity has an impact 
+First with straight forward scatter plots for each comparision
+lewis average pause watts to the peak wingate watts - with visualization of the impact of weight
+```{r}
+qplot(LewisAvg_.Pause_watts, WingatePeak_Watts,data=nhldata,geom=c("point"),size = Weight_kg)
+```
+
+lewis average pause watts to the peak aerobic watts -with visualization of the impact of weight
+```{r}
+qplot(LewisAvg_.Pause_watts, VO2max_watts,data=nhldata,geom=c("point"),size = Weight_kg)
+```
+
+Next we want to see if there is a pattern in the distribution of vertical jump power across the bivariate distribution of wingate and aerobic power
+```{r}
+qplot(WingatePeak_Watts, VO2max_watts,data=nhldata,geom=c("point"),size = LewisAvg_.Pause_watts)
+```
+
+Finally we want to see if there is a pattern in the distribution of vertical jump power and body mass across the bivariate distribution of wingate and aerobic power - this may be too much in one graphic but it is a start:
+```{r}
+qplot(WingatePeak_Watts, VO2max_watts,data=nhldata,geom=c("point"),size = LewisAvg_.Pause_watts, color = Weight_kg)
+```
+
+There could be more to come. Let's start with the above and see where it takes the report. It may be interesting to put some of these into linear models and see what we get - but I want to do so cautiously, not just throw a model together to see what comes out of it. Once models are built, then the fit lines can be added to any / all of the graphics above.
+
+
