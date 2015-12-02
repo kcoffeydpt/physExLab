@@ -4,7 +4,7 @@
 
 
 GET DATA  /TYPE=TXT
-  /FILE="/Users/collins/maxVO2_RSA/combineData/data.csv"
+  /FILE="/Users/collins/physexlab/NHLcombineData/data.csv"
   /ENCODING='Locale'
   /DELCASE=LINE
   /DELIMITERS=","
@@ -62,12 +62,18 @@ CACHE.
 EXECUTE.
 DATASET NAME DataSet1 WINDOW=FRONT.
 
-
+COMPUTE VO2_L_WingatePower=WingateMean_Watts * VO2max_l_min.
+EXECUTE.
 
 DATASET ACTIVATE DataSet1.
 GRAPH
-  /ERRORBAR(CI 95)=SayersPeak_NoPause_watts WingatePeak_Watts WingateMean_Watts VO2max_watts
+  /ERRORBAR(CI 95)=SayersPeak_NoPause_watts LewisAvg_NoPause_watts WingatePeak_Watts WingateMean_Watts VO2max_watts
   /MISSING=LISTWISE.
+
+DESCRIPTIVES VARIABLES=SayersPeak_NoPause_watts LewisAvg_NoPause_watts WingatePeak_Watts 
+    WingateMean_Watts VO2max_watts
+  /STATISTICS=MEAN STDDEV MIN MAX SEMEAN.
+
 
 GRAPH
   /SCATTERPLOT(BIVAR)=SitReach WITH SayersPeak_NoPause_watts
@@ -80,3 +86,16 @@ GRAPH
 GRAPH
   /SCATTERPLOT(BIVAR)=BenchPress_reps150 WITH PushUps_max
   /MISSING=LISTWISE.
+
+DATASET ACTIVATE DataSet1.
+GRAPH
+  /SCATTERPLOT(BIVAR)=WingatePeak_Watts WITH VO2max_watts
+  /MISSING=LISTWISE.
+
+
+
+
+
+
+
+

@@ -1,0 +1,71 @@
+---
+title: "Lemgart Analysis - NHL draft combine data"
+author: "Sean Collins"
+date: "December 2, 2015"
+output: html_document
+---
+Data analysis performed for Charlotte Lemgart's physiology of exercise lab report
+
+Research has shown mixed relationships between anaerobic and aerobic capacity. In this study hockey players participating in the NHL combine were tested both anaerobically and aerobically. The goal of this analysis is to test whether there is a relationship between their peak aerobic power and anaerobic power. 
+Associations will be tested between the max aerobic test variables (both VO2 max in ml/kg/min and peak aerobic test watts), Wingate peak watts, and vertical jump average watts (Lewis equation, jump with a pause).
+
+compare Wingate peak watts to VO2 max watts and VO2 max ml kg min to peak wingate watt kg
+compare lewis average pause watts to the peak watts and to VO2 max watts to see if there is any relationships and if jump capacity has an impact 
+ 
+Underlying this analysis is the belief that balanced and similiar training between the athletes would result in a positive relationship between these variables. However, it is possible that factors such as types of training varying between players, or personal characteristics may result in a weak or no relationship between these variables.
+
+```{r}
+# Load necessary R packages
+library(dplyr) #For data manipulation
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+
+# Set working directory - mac file system
+setwd("~/physExLab/NHLcombinedata")
+
+# Load data
+nhldata<-read.csv("data.csv")
+
+#Create weight in kg variable
+nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
+
+#Create aerobic test peak watts / kg variable
+nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
+
+#Create dataframe with only the variables we are interested in
+nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg, LewisAvg_.Pause_watts)
+```
+
+Here is a summary of the resulting dataframe. As you can see there are missing values in most variables.
+```{r}
+str(nhldata)
+summary(nhldata)
+```
+
+But we are really only interested in cases that have complete data - so need to eliminate cases with missing data (note - if we had plans for a publication we would be much more cautious about doing this)
+
+As you can see we have gone from 100 subjects to 94 subjects - so 6 subjects had incomplete data in the variables of interest.
+
+```{r}
+nhldata <- nhldata[complete.cases(nhldata), ]
+str(nhldata)
+summary(nhldata)
+```
+
+
+
+First a descriptive summary of the variables of interest:
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #limits output to 2 significant digits
+stat.desc(nhldata, basic=F) #runs basic stats
+```
+
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
