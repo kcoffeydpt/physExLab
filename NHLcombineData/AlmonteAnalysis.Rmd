@@ -1,0 +1,142 @@
+---
+title: "Almonte - NHL draft combine data"
+author: "Sean Collins"
+date: "December 2, 2015"
+output: html_document
+---
+Data analysis performed for Almonte's physiology of exercise lab report
+
+Question: Do skating players (forward and defense) entering the NHL combine scouting tests have different testing results in key indices of aerobic and anaerobic fitness?
+
+Expected: Forwards will have a higher aerobic fitness, defense will have a higher peak power, but also a higher fatigue index percent (they will fatigue faster).
+
+Request:
+Compare averages-- mean, standard deviation, etc.-- of both groups: please add histograms - I went with boxplots thinking they would provide a better approach to comparing the groups; tables -all the data you need for tables is included but not in a presentable way so you can select what you want and add to a table
+Aerobic fitness with VO2 max (ml/kg/min)
+Anaerobic fitness with peak power
+Anaerobic fatigue index
+
+Other variables you might be interested have been added - you can disregard; if it is disruptive to have them included here they can be removed
+
+Note: goalies are not included in the analysis
+
+Analysis
+
+```{r}
+# Load necessary R packages
+library(dplyr) #For data manipulation
+library(reshape2) #For data manipulation related to plotting
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+library(psych) #For descriptive statistics
+
+# Set working directory - mac file system
+setwd("~/physExLab/NHLcombinedata")
+
+# Load data
+nhldata<-read.csv("data_position.csv")
+
+#Create weight in kg variable
+nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
+
+#Create aerobic test peak watts / kg variable
+nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
+
+#Create Lewis average watts / kg
+nhldata<-mutate(nhldata, LewisAvg_.Pause_watts_kg= LewisAvg_.Pause_watts/Weight_kg)
+
+#Create dataframe with only the variables we are interested in
+nhldata<-select(nhldata,PosNumeric, Position, Weight_kg, WingatePeak_Watts, PeakWingate_W_kg, WingatePercentDrop, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg, LewisAvg_.Pause_watts, LewisAvg_.Pause_watts_kg)
+```
+
+Here is a summary of the resulting dataframe. As you can see there are missing values in most variables.
+```{r}
+str(nhldata)
+summary(nhldata)
+```
+
+But we are really only interested in cases that have complete data - so need to eliminate cases with missing data (note - if we had plans for a publication we would be much more cautious about doing this)
+
+As you can see we have gone from 90 subjects to 86 subjects - so 4 subjects had incomplete data in the variables of interest.
+
+```{r}
+nhldata <- nhldata[complete.cases(nhldata), ]
+str(nhldata)
+summary(nhldata)
+```
+
+Descriptive summary of the (potential) variables of interest (all subjects):
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
+stat.desc(nhldata, basic=F) #runs basic stats
+```
+
+Descriptive summary of the (potential) variables of interest for forwards:
+```{r}
+forwards<-filter(nhldata,PosNumeric==1)
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
+stat.desc(forwards, basic=F) #runs basic stats
+```
+
+Descriptive summary of the (potential) variables of interest for forwards:
+```{r}
+defense<-filter(nhldata,PosNumeric==2)
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
+stat.desc(defense, basic=F) #runs basic stats
+```
+
+
+Decided to use Boxplots - The box plot (a.k.a. box and whisker diagram) is a standardized way of displaying the distribution of data based on the five number summary: minimum, first quartile, median, third quartile, and maximum. Outliers are plotted as individual points. They are easier to look at for comparing two factors of a variable (forward, defense) 
+
+```{r}
+ggplot(nhldata, aes(factor(Position), WingatePeak_Watts)) + geom_boxplot() 
+```
+
+```{r}
+ggplot(nhldata, aes(factor(Position), PeakWingate_W_kg)) + geom_boxplot() 
+```
+
+```{r}
+ggplot(nhldata, aes(factor(Position), WingatePercentDrop)) + geom_boxplot() 
+```
+
+```{r}
+ggplot(nhldata, aes(factor(Position), VO2max_l_min)) + geom_boxplot()
+```
+
+```{r}
+ggplot(nhldata, aes(factor(Position), VO2max_watts_kg)) + geom_boxplot()
+```
+
+```{r}
+ggplot(nhldata, aes(factor(Position), LewisAvg_.Pause_watts)) + geom_boxplot()
+```
+
+```{r}
+ggplot(nhldata, aes(factor(Position), LewisAvg_.Pause_watts_kg)) + geom_boxplot()
+```
+
+The fact that there is not much difference between the absolute and relative versions of these data is really due to the fact that there is not much of a difference between the groups in body mass:
+```{r}
+ggplot(nhldata, aes(factor(Position), Weight_kg)) + geom_boxplot()
+```
+
+Just for kicks - I also used a t-test to see whether there were differences between the positions (the graphics suggest not - but wanted to see if the null was accepted in the t-test (i.e. p > 0.05 if we accept an alpha of 0.05))
+
+```{r}
+t.test(nhldata$Weight_kg~nhldata$Position)
+t.test(nhldata$WingatePeak_Watts~nhldata$Position)
+t.test(nhldata$PeakWingate_W_kg~nhldata$Position)
+t.test(nhldata$WingatePercentDrop~nhldata$Position)
+t.test(nhldata$VO2max_l_min~nhldata$Position)
+t.test(nhldata$VO2max_ml_kg_min~nhldata$Position)
+t.test(nhldata$VO2max_watts~nhldata$Position)
+t.test(nhldata$VO2max_watts_kg~nhldata$Position)
+t.test(nhldata$LewisAvg_.Pause_watts~nhldata$Position)
+t.test(nhldata$LewisAvg_.Pause_watts_kg~nhldata$Position)
+```
+
+Clearly there are no significant differences in this data set between these players. Makes for an interesting report though - particularly if there are papers out there showing a difference in older players. Raises the question of whether the players have not been playing long enough to be trained into their position where they partially adapt based on their role.
