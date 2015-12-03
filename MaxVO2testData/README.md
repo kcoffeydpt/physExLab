@@ -28,29 +28,53 @@ Efficiency = PowerDone_watts / PowerUsed_watts
 **Subject Files** Each subject's file has their ID (1 - 25) which is also the name of their file "1.csv, 2.csv" etc. These files have the breath by breath (bxb) data exported
 
 Variable names:
+
 ID - subject ID
+
 tod - time of day
+
 tot - time of test
+
 level - testing level "E" stands for exercise - all subject data is limited to the E level
+
 vo2_L - VO2 consumed for that breath in liters
+
 vo2_mlkgmin - VO2 consumed for that breath in liters/kg/min
+
 vco2_L - VCO2 produced for that breath in liters
+
 rq - respiratory quotient (RER)
+
 ve_stpd - ventilation
+
 ve_btps - ventilation
+
 vt_L - tidal volume (liters)
+
 rr - respiratory rate (breaths per minute - clearly an extrapolation) 
+
 pef - peak expiratory flow
+
 veo2 - VEO2 (Ve/VO2)
+
 veco2 - VECO2 (Ve/VCO2)
+
 Ti_sec - time of inspiration in seconds
+
 Te_sec - time of expiration in seconds
+
 Ttot_sec - Total time for breathing cycle in seconds
+
 Ti_Ttot - Time in inspiration as a percentage of total time
+
 vt_Ti - tidal volume time of inspiration
+
 speed - treadmill speed in miles per hour
+
 grade - treadmill grade (fractional, i.e. 10% = 0.1)
+
 hr - heart rate in beats per minute - clearly an extrapolation
+
 o2pulse - O2 Pulse = VO2 / hr so it's how much oxygen is consumed per heart beat - thought to represent stroke volume (relatively)
 peto2 - partial pressure of end tidal O2
 petco2 - partial pressure of end tidal CO2
