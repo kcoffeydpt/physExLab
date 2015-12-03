@@ -16,9 +16,13 @@ Students that are interested in using any of the data below should:
 4. Fork the repo so it is set up in your Github account
 5. Either set up Git on your computer (https://git-scm.com/), or just use Github 
 
-For #5 and #6 you may want to watch the Github tutorials (https://github.com/)
+For #4 and #5 you may want to watch the Github tutorials (https://github.com/)
 
 There is also a great resource for starting out (free) on the Data Scientist Toolbox Github page: https://datasciencespecialization.github.io/toolbox/
+
+And a free course on using git on codeacademy: https://www.codecademy.com/learn/learn-git
+
+Just keep in mind that learning git or github is not necessary if all you want to do is look at data on the respository, come up with questions and work with me as your data analyst on your project. All you have to do in that case is send me your question and hypothesis and we can get started.
 
 #### Adding curated data: if you would like to collaborate by adding curated data we can talk about how to do this without having to create too many branches in the repository (i.e. you send it to me and I can add it to the main branch, giving you full attribution)
 
