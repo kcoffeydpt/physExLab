@@ -80,7 +80,7 @@ options(digits=2) #suggests a limit of 2 significant digits - but it is only a s
 stat.desc(forwards, basic=F) #runs basic stats
 ```
 
-Descriptive summary of the (potential) variables of interest for forwards:
+Descriptive summary of the (potential) variables of interest for defenders:
 ```{r}
 defense<-filter(nhldata,PosNumeric==2)
 options(scipen=100) #supresses scientific notation of output
@@ -105,6 +105,10 @@ ggplot(nhldata, aes(factor(Position), WingatePercentDrop)) + geom_boxplot()
 
 ```{r}
 ggplot(nhldata, aes(factor(Position), VO2max_l_min)) + geom_boxplot()
+```
+
+```{r}
+ggplot(nhldata, aes(factor(Position), VO2max_ml_kg_min)) + geom_boxplot()
 ```
 
 ```{r}
