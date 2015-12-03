@@ -3,6 +3,5 @@ account: rpubs
 server: rpubs.com
 bundleId:
         https://api.rpubs.com/api/v1/document/132597/988468290795414da78b040e5d32223a
-url:
-        http://rpubs.com/publish/claim/132597/26de4e276fb24dccb373b23ca0f45ea1
-when: 1449086220.13976
+url: http://rpubs.com/sean_collins/132597
+when: 1449136848.59859

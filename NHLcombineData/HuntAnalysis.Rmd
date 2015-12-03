@@ -31,7 +31,7 @@ nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
 #Create aerobic test peak watts / kg variable
 nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
 
-#Create Lewis average watts / kg
+#Create Sayer peak watts / kg
 nhldata<-mutate(nhldata, SayersPeak_NoPause_watts_kg= SayersPeak_NoPause_watts/Weight_kg)
 
 #Create dataframe with only the variables we are interested in
@@ -140,14 +140,14 @@ qplot(WingatePeak_Watts, VO2max_watts,data=nhldata,geom=c("point"))
 qplot(PeakWingate_W_kg, VO2max_ml_kg_min,data=nhldata,geom=c("point"))
 ```
 
-3. Compare lewis average pause watts to the peak watts and to VO2 max watts to see if there is any relationships and if jump capacity has an impact 
+3. Compare Sayers peak no pause watts to the peak watts and to VO2 max watts to see if there is any relationships and if jump capacity has an impact 
 First with straight forward scatter plots for each comparision
-lewis average pause watts to the peak wingate watts - with visualization of the impact of weight
+Sayers peak no pause watts to the peak wingate watts - with visualization of the impact of weight
 ```{r}
 qplot(SayersPeak_NoPause_watts, WingatePeak_Watts,data=nhldata,geom=c("point"),size = Weight_kg)
 ```
 
-lewis average pause watts to the peak aerobic watts -with visualization of the impact of weight
+Sayers peak no pause watts to the peak aerobic watts -with visualization of the impact of weight
 ```{r}
 qplot(SayersPeak_NoPause_watts, VO2max_watts,data=nhldata,geom=c("point"),size = Weight_kg)
 ```
