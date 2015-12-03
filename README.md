@@ -6,7 +6,7 @@ Data and analysis files for Physiology of Exercise Lab
 
 smcollins1@plymouth.edu
 
-**New** In the next few days I am going to start adding possible questions you could address with analysis of data within the various datasets curated and available in this repository. As this is done I will add a comment to this main readme file and subsequently the project page.
+As students have started to working on projects with me serving as their data analyst I have started to upload the analyses performed to RPubs (https://rpubs.com/). As analysis are uploaded they are hosted on my RPubs profile (https://rpubs.com/sean_collins) and I will also try to continue to add direct links to analyses in the appropriate sections of this README file and github front page (i.e. see below under the NHL Combine Data).
 
 Students that are interested in using any of the data below should:
 
@@ -62,6 +62,14 @@ Data from the NHL combine that is available online at
 http://centralscouting.nhl.com/link3/cs/combine.nsf/Attachments/CombineResultsSpreadsheet/$FILE/combine-results.xls
 
 Includes data on Wingate, vertical jumps, and max bike VO2 testing, as well as several strength, flexibility, coordination and anthropometric variables in about 100 athletes
+
+Analyses Performed:
+
+https://rpubs.com/sean_collins/LemgartAnalysis
+
+https://rpubs.com/sean_collins/AlmonteAnalysis
+
+https://rpubs.com/sean_collins/Hunt_Analysis
 
 ## MaxVO2testData
 
