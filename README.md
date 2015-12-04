@@ -79,11 +79,15 @@ https://rpubs.com/sean_collins/Hunt_Analysis
 
 Found NFL combine data at: http://nflcombineresults.com/nflcombinedata.php
 
-So far all I have managed to do is write a R script that gets the data from the website above and pulls it into R, creates a data frame and exports a CSV file of the data for use by anyone that wants it in excel. 
+So far all I have managed to do is write a R script that gets the data from the website above and pulls it into R, creates a data frame and exports a CSV file of the data for use by anyone that wants it in excel - but this does not have all the data as I have done most manipulations in R. The "data_cleaned.csv" has the solution to the previous problem with the 40 yard sprint data.
 
 There are 5346 players that have been in the combine from 1999 - 2015; with the programs this can be added to with each new draft class easily.
 
-At this point the only data that would not be "analyzable" is the 40 yard sprint - I still need to clean it up as the webpage includes an annoying "*" for each sprint that was not recorded at the combine and is therefore not official. I need to separate this from the data so that the variable can be numeric, and create a new variable that keeps track of the players with unofficial times.
+Created an RPub on the vertical jump (leap) data from this data set - just to demonstrate the necessity of calculating power due to the huge variability associated with body weight differences.
+
+http://rpubs.com/sean_collins/Vertical_Jump
+
+
 
 ## MaxVO2testData
 
