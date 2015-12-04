@@ -37,10 +37,24 @@ qplot(VertLeap_in, LewisPower, data = nfldata, color = Weight_kg)
 qplot(Weight_kg, data=nfldata, geom="histogram")
 nfldata$wt_quantiles<-quantcut(nfldata$Weight_kg, q=seq(0,1,by=0.25), na.rm=TRUE)
 
+qplot(VertLeap_in, SayersPower, data = nfldata, color = nfldata$Weight_kg)
+qplot(VertLeap_in, LewisPower, data = nfldata, color = nfldata$Weight_kg)
+
+
 qplot(Weight_kg, data=nfldata, geom="histogram",color=nfldata$wt_quantiles)
 
 qplot(VertLeap_in, SayersPower, data = nfldata, color = nfldata$wt_quantiles)
 qplot(VertLeap_in, LewisPower, data = nfldata, color = nfldata$wt_quantiles)
 
+qplot(y=SayersPower, x=VertLeap_in, col=factor(wt_quantiles), data=nfldata) + stat_smooth(method=lm, formula=y~x)
 
+fitSayersWeight<-lm(formula = SayersPower ~ VertLeap_in + wt_quantiles, data = nfldata)
+summary(fitSayersWeight)
+fitSayers<-lm(formula = SayersPower ~ VertLeap_in, data = nfldata)
+summary(fitSayers)
 
+fitLewisWeight<-lm(formula = LewisPower ~ VertLeap_in + wt_quantiles, data = nfldata)
+summary(fitLewisWeight)
+
+fitLewis<-lm(formula = LewisPower ~ VertLeap_in, data = nfldata)
+summary(fitLewis)

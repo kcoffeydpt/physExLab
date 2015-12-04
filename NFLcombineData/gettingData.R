@@ -2,17 +2,18 @@
 
 setwd("~/physexlab/NFLcombineData")
 
-library(XML)
-library(plyr)
+library(XML) 
+library(plyr) 
 library(dplyr)
 library(ggplot2)
+library(gtools)
 
 #This code reads in the data from the website, converts to a dataframe and exports to CSV
-# theurl <- "http://nflcombineresults.com/nflcombinedata.php?year=all&pos=&college="
-# raw <- readHTMLTable(theurl)
-# nfldata <- ldply(raw, data.frame)
-# rm(raw)
-# write.csv(nfldata, file = "data.csv")
+theurl <- "http://nflcombineresults.com/nflcombinedata.php?year=all&pos=&college="
+raw <- readHTMLTable(theurl)
+nfldata <- ldply(raw, data.frame)
+rm(raw)
+write.csv(nfldata, file = "data.csv")
 # rm(nfldata)
 
 #Read in the data from the csv file
