@@ -112,11 +112,13 @@ Wingate - tested on a subsample of the class using a Monark Wingate equipped bik
 
 <p>Found NFL combine data at: <a href="http://nflcombineresults.com/nflcombinedata.php">http://nflcombineresults.com/nflcombinedata.php</a></p>
 
-<p>So far all I have managed to do is write a R script that gets the data from the website above and pulls it into R, creates a data frame and exports a CSV file of the data for use by anyone that wants it in excel. </p>
+<p>So far all I have managed to do is write a R script that gets the data from the website above and pulls it into R, creates a data frame and exports a CSV file of the data for use by anyone that wants it in excel - but this does not have all the data as I have done most manipulations in R. The "data_cleaned.csv" has the solution to the previous problem with the 40 yard sprint data.</p>
 
 <p>There are 5346 players that have been in the combine from 1999 - 2015; with the programs this can be added to with each new draft class easily.</p>
 
-<p>At this point the only data that would not be "analyzable" is the 40 yard sprint - I still need to clean it up as the webpage includes an annoying "*" for each sprint that was not recorded at the combine and is therefore not official. I need to separate this from the data so that the variable can be numeric, and create a new variable that keeps track of the players with unofficial times.</p>
+<p>Created an RPub on the vertical jump (leap) data from this data set - just to demonstrate the necessity of calculating power due to the huge variability associated with body weight differences.</p>
+
+<p><a href="http://rpubs.com/sean_collins/Vertical_Jump">http://rpubs.com/sean_collins/Vertical_Jump</a></p>
 
 <h2>
 <a id="maxvo2testdata" class="anchor" href="#maxvo2testdata" aria-hidden="true"><span class="octicon octicon-link"></span></a>MaxVO2testData</h2>
