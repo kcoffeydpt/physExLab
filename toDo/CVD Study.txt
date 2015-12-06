@@ -1,0 +1,17 @@
+Data from: The role of neighborhood environment in promoting risk factors of cardiovascular disease among young adults: data from middle to high income population in an Asian megacity
+
+When using this data, please cite the original publication:
+
+Hussain MA, Noorani S, Khan A, Asad H, Rehan A, Kazi A, Baig MZ, Noor A, Aqil A, Bham NS, Khan MA, Hassan IN, Kadir MM (2015) The role of neighborhood environment in promoting risk factors of cardiovascular disease among young adults: data from middle to high income population in an Asian megacity. PLOS ONE 10(5): e0124827. 
+
+http://dx.doi.org/10.1371/journal.pone.0124827
+
+
+Additionally, please cite the Dryad data package:
+
+Hussain MA, Noorani S, Khan A, Asad H, Rehan A, Kazi A, Baig MZ, Noor A, Aqil A, Bham NS, Khan MA, Hassan IN, Kadir MM (2015) Data from: The role of neighborhood environment in promoting risk factors of cardiovascular disease among young adults: data from middle to high income population in an Asian megacity. Dryad Digital Repository.
+
+http://dx.doi.org/10.5061/dryad.3n451
+
+Abstract 
+Background: Modifiable risk factors of cardiovascular diseases (CVD) have their triggers in the neighborhood environments of communities. Studying the environmental triggers for CVD risk factors is important to understand the situation in a broader perspective. Young adults are influenced the most by the environment profile around them hence it is important to study this subset of the population. Methods: This was a descriptive study conducted using the EPOCH research tool designed by the authors of the PURE study. The study population consisted of young adults aged 18-25 in two areas of Karachi. The study setting was busy shopping malls frequented by young adults in the particular community being studied. Results: Our total sample size was 120 individuals, who consented to be interviewed by our interviewers. Less than 50% of the population recognized some form of restriction regarding smoking in their communities. The largest contributor to tobacco advertising was actors smoking in movies and TV shows with 89% responses from both communities. Only 11.9% of the individuals disapproved of smoking cigarettes among men with wide acceptance of ‘sheesha’ across all age groups. Advertising for smoking and junk food was more frequent as compared to smoking cessation, healthy diet and exercise in both the areas. Unhealthy food items were more easily available in contrast to healthier options. The cost of healthy snack food options including vegetables and fruits was higher than sugary drinks and foods. Conclusion: This assessment showed that both communities were exposed to environments that promote risk factors for cardiovascular diseases.

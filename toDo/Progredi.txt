@@ -1,0 +1,9 @@
+Data from: Internet-delivered therapist-guided physical activity for mild to moderate depression: a randomized controlled trial
+
+
+When using this data, please cite the original publication:
+Ström M, Uckelstam C, Andersson G, Hassmén P, Umefjord G, Carlbring P (2013) Internet-delivered therapist-guided physical activity for mild to moderate depression: a randomized controlled trial. PeerJ 1: e178. http://dx.doi.org/10.7717/peerj.178
+
+
+Additionally, please cite the Dryad data package
+Ström M, Uckelstam C, Andersson G, Hassmén P, Umefjord G, Carlbring P (2013) Data from: Internet-delivered therapist-guided physical activity for mild to moderate depression: a randomized controlled trial. Dryad Digital Repository. http://dx.doi.org/10.5061/dryad.c6q65

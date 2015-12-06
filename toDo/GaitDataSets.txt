@@ -1,0 +1,7 @@
+
+Gait Datasets
+
+http://www.cs.mcgill.ca/~jfrank8/data/gait-dataset.html
+
+https://peerj.com/preprints/700/
+

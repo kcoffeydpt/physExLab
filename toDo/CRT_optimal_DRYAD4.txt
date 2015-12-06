@@ -1,0 +1,17 @@
+Data from: Optimal cardiac resynchronization therapy pacing rate in non-ischemic heart failure patients: a randomized crossover pilot trial
+
+When using this data, please cite the original publication:
+
+Ghotbi AA, Sander M, Køber L, Philbert BT, Gustafsson F, Hagemann C, Kjær A, Jacobsen PK (2015) Optimal cardiac resynchronization therapy pacing rate in non-ischemic heart failure patients: a randomized crossover pilot trial. PLoS ONE 10(9): e0138124. 
+
+http://dx.doi.org/10.1371/journal.pone.0138124
+
+
+Additionally, please cite the Dryad data package:
+
+Ghotbi AA, Sander M, Køber L, Philbert BT, Gustafsson F, Hagemann C, Kjær A, Jacobsen PK (2015) Data from: Optimal cardiac resynchronization therapy pacing rate in non-ischemic heart failure patients: a randomized crossover pilot trial. Dryad Digital Repository. 
+
+http://dx.doi.org/10.5061/dryad.ts183
+
+Abstract 
+Background: The optimal pacing rate during cardiac resynchronization therapy (CRT) is unknown. Therefore, we investigated the impact of changing basal pacing frequencies on autonomic nerve function, cardiopulmonary exercise capacity and self-perceived quality of life (QoL). Methods: Twelve CRT patients with non-ischemic heart failure (NYHA class II–III) were enrolled in a randomized, double-blind, crossover trial, in which the basal pacing rate was set at DDD-60 and DDD-80 for 3 months (DDD-R for 2 patients). At baseline, 3 months and 6 months, we assessed sympathetic nerve activity by microneurography (MSNA), peak oxygen consumption (pVO2), N-terminal pro-brain natriuretic peptide (p-NT-proBNP), echocardiography and QoL. Results: DDD-80 pacing for 3 months increased the mean heart rate from 77.3 to 86.1 (p = 0.001) and reduced sympathetic activity compared to DDD-60 (51±14 bursts/100 cardiac cycles vs. 64±14 bursts/100 cardiac cycles, p<0.05). The mean pVO2 increased non-significantly from 15.6±6 mL/min/kg during DDD-60 to 16.7±6 mL/min/kg during DDD-80, and p-NT-proBNP remained unchanged. The QoL score indicated that DDD-60 was better tolerated. Conclusion: In CRT patients with non-ischemic heart failure, 3 months of DDD-80 pacing decreased sympathetic outflow (burst incidence only) compared to DDD-60 pacing. However, Qol scores were better during the lower pacing rate. Further and larger scale investigations are indicated. Trial Registration: ClinicalTrials.gov NCT02258061
