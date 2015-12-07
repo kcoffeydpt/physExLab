@@ -1,0 +1,163 @@
+---
+title: "Lemgart Analysis 2 - NHL draft combine data"
+author: "Sean Collins"
+date: "December 2, 2015"
+output: html_document
+---
+Data analysis performed for Charlotte Lemgart's physiology of exercise lab report
+
+A preliminary analysis can be found at: https://rpubs.com/sean_collins/LemgartAnalysis
+
+Presented below is a more in depth analysis of the questions of interest for this report including the use of linear and multivariable regression.
+
+Research has shown mixed relationships between anaerobic and aerobic capacity. In this study hockey players participating in the NHL combine were tested both anaerobically and aerobically. The goal of this analysis is to test whether there is a relationship between their peak aerobic power and anaerobic power. 
+Associations will be tested between the max aerobic test variables (both VO2 max in ml/kg/min and peak aerobic test watts), Wingate peak watts, and vertical jump average watts (Lewis equation, jump with a pause).
+
+Underlying this analysis is the belief that balanced and similiar training between the athletes would result in a positive relationship between these variables. However, it is possible that factors such as types of training varying between players, or personal characteristics may result in a weak or no relationship between these variables.
+
+```{r}
+# Load necessary R packages
+library(dplyr) #For data manipulation
+library(reshape2) #For data manipulation related to plotting
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+
+# Set working directory - mac file system
+setwd("~/physExLab/NHLcombinedata")
+
+# Load data
+nhldata<-read.csv("data.csv")
+
+#Create weight in kg variable
+nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
+
+#Create aerobic test peak watts / kg variable
+nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
+
+#Create Lewis average watts / kg
+nhldata<-mutate(nhldata, LewisAvg_.Pause_watts_kg= LewisAvg_.Pause_watts/Weight_kg)
+
+#Create dataframe with only the variables we are interested in
+nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg, LewisAvg_.Pause_watts, LewisAvg_.Pause_watts_kg)
+
+# Limit to cases that have complete data 
+nhldata <- nhldata[complete.cases(nhldata), ]
+str(nhldata)
+summary(nhldata)
+```
+
+For a Descriptive summary of the variables, the univariate distributinos (boxplots) and additional bivariate distributions see the preliminary analysis.
+
+
+### Bivariate distributions (i.e. scatter plots) 
+
+This second draft attempts to fit the data with a function (i.e. linear model - either univariable or multivariable). The focus is on the plots that test the primary questions for this analysis - between the max aerobic test variables (both VO2 max in ml/kg/min and peak aerobic test watts), Wingate peak watts, and vertical jump average watts (Lewis equation, jump with a pause).
+
+There are 9 total regression models presented below. The follow from the relevant scatterplot. If the scatter plot included a third (or fourth) variable (i.e. body mass, vertical jump) then those variables are added to the model (i.e. multivariable regression).
+
+#### Compare Wingate peak watts to VO2 max watts 
+```{r}
+qplot(WingatePeak_Watts, VO2max_watts,data=nhldata,geom=c("point", "smooth"),method="lm")
+```
+
+##### Fit 1 - linear regression of Wingate Peak watts and VO2 Max Watts
+```{r}
+fit1 <- lm(VO2max_watts ~ WingatePeak_Watts, data=nhldata) #fit model
+summary(fit1) # show results 
+```
+
+#### Compare VO2 max ml kg min to peak wingate watt kg
+```{r}
+qplot(PeakWingate_W_kg, VO2max_ml_kg_min,data=nhldata,geom=c("point", "smooth"),method="lm")
+```
+
+##### Fit 2 
+```{r}
+fit2 <- lm(VO2max_ml_kg_min ~ PeakWingate_W_kg, data=nhldata) #fit model
+summary(fit2) # show results 
+```
+
+#### Compare lewis average pause watts to the peak watts with body mass
+```{r}
+qplot(LewisAvg_.Pause_watts, WingatePeak_Watts,data=nhldata,geom=c("point", "smooth"),method="lm",size = Weight_kg)
+```
+
+##### Fit 3
+```{r}
+fit3 <- lm(WingatePeak_Watts ~ LewisAvg_.Pause_watts, data=nhldata) #fit model
+summary(fit3) # show results 
+```
+
+##### Fit 4 (Fit 3 with addition of body mass predictor)
+```{r}
+fit4 <- lm(WingatePeak_Watts ~ LewisAvg_.Pause_watts + Weight_kg, data=nhldata) #fit model
+summary(fit4) # show results 
+```
+
+#### Compare lewis average pause watts to VO2 max watts with body mass 
+```{r}
+qplot(LewisAvg_.Pause_watts, VO2max_watts,data=nhldata,geom=c("point", "smooth"),method="lm",size = Weight_kg)
+```
+
+##### Fit 5
+```{r}
+fit5 <- lm(VO2max_watts ~ LewisAvg_.Pause_watts, data=nhldata) #fit model
+summary(fit5) # show results 
+```
+
+##### Fit 6 (Fit 5 with addition of body mass predictor))
+```{r}
+fit6 <- lm(VO2max_watts ~ LewisAvg_.Pause_watts + Weight_kg, data=nhldata) #fit model
+summary(fit6)
+```
+
+#### Is there is a pattern in the distribution of vertical jump power across the bivariate distribution of wingate and aerobic power?
+```{r}
+qplot(WingatePeak_Watts, VO2max_watts,data=nhldata,geom=c("point", "smooth"),method="lm",size = LewisAvg_.Pause_watts)
+```
+
+##### Fit 7
+```{r}
+fit7 <- lm(VO2max_watts ~ WingatePeak_Watts + LewisAvg_.Pause_watts, data=nhldata) #fit model
+summary(fit7)
+```
+
+#### Is there a pattern in the distribution of vertical jump power and body mass across the bivariate distribution of wingate and aerobic power?
+```{r}
+qplot(WingatePeak_Watts, VO2max_watts,data=nhldata,geom=c("point", "smooth"),method="lm",size = LewisAvg_.Pause_watts, color = Weight_kg)
+```
+
+##### Fit 8
+```{r}
+fit8 <- lm(VO2max_watts ~ WingatePeak_Watts + LewisAvg_.Pause_watts + Weight_kg, data=nhldata) #fit model
+summary(fit8)
+```
+
+##### Fit 9 - tests Fit 8 with the addition of an interaction term between Vertical Power and Body mass
+```{r}
+fit9 <- lm(VO2max_watts ~ WingatePeak_Watts + LewisAvg_.Pause_watts + Weight_kg + (LewisAvg_.Pause_watts * Weight_kg), data=nhldata) #fit model
+summary(fit9)
+```
+
+## Suggestions
+
+based on the above the only thing I would take away from this that you might want to include in your report would be the relationship between the vertical jump power and the wingate peak power. This is not a fascinating finding, but there is a clear impact of body mass (kg) in the graphic that the linear models also confirm. 
+
+#### The figure of interest is this one:
+```{r, echo=FALSE}
+qplot(LewisAvg_.Pause_watts, WingatePeak_Watts,data=nhldata,geom=c("point", "smooth"),method="lm",size = Weight_kg)
+```
+
+##### Fit 3 - shows a positive slope coefficient and R^2= 0.2416
+```{r, echo = FALSE}
+fit3 <- lm(WingatePeak_Watts ~ LewisAvg_.Pause_watts, data=nhldata) #fit model
+summary(fit3) # show results 
+```
+
+##### Fit 4 - adds body mass and now has an R^2= 0.4143
+```{r}
+fit4 <- lm(WingatePeak_Watts ~ LewisAvg_.Pause_watts + Weight_kg, data=nhldata) #fit model
+summary(fit4) # show results 
+```
+
+Together Fit 3 and Fit 4 demonstrate that a higher vertical jump (increased explosive power) predicts a higher peak Wingate power (increased power in 5 seconds); and that much of this relationship is influenced by body mass (when body mass is added it is the stronger predictor of Wingate power)
