@@ -1,5 +1,5 @@
 ---
-title: "Almonte - NHL draft combine data"
+title: "D'Amour - NHL draft combine data"
 author: "Sean Collins"
 date: "December 8, 2015"
 output: html_document
@@ -34,7 +34,7 @@ PushStrength_lbperlbBodyWeight
 
 Note: since data includes body mass normalized variables, this analysis will not calculate those variables; therefore the normalizations are based on "lbs" not "kgs" since that is how the NHL has done the processing
 
-###Loading R packages, getting data ready
+### 1. Loading R packages, getting data ready
 ```{r}
 # Load necessary R packages
 library(dplyr) #For data manipulation
@@ -73,6 +73,8 @@ str(nhldata)
 summary(nhldata)
 ```
 
+### 2. Descriptive statistics
+
 ##### Descriptive summary (both groups):
 ```{r}
 options(scipen=100) #supresses scientific notation of output
@@ -96,60 +98,55 @@ options(digits=2) #suggests a limit of 2 significant digits - but it is only a s
 stat.desc(defense, basic=F) #runs basic stats
 ```
 
-###NOTE - LEFT OFF HERE
+### 3. Boxplots to compare groups
 
-Decided to use Boxplots - The box plot (a.k.a. box and whisker diagram) is a standardized way of displaying the distribution of data based on the five number summary: minimum, first quartile, median, third quartile, and maximum. Outliers are plotted as individual points. They are easier to look at for comparing two factors of a variable (forward, defense) 
+The box plot (a.k.a. box and whisker diagram) is a standardized way of displaying the distribution of data based on the five number summary: minimum, first quartile, median, third quartile, and maximum. Outliers are plotted as individual points. They are easier to look at for comparing two factors of a variable (forward, defense) 
 
 ```{r}
-ggplot(nhldata, aes(factor(Position), WingatePeak_Watts)) + geom_boxplot() 
+ggplot(nhldata, aes(factor(Position), BenchPress_reps150)) + geom_boxplot() 
 ```
 
 ```{r}
-ggplot(nhldata, aes(factor(Position), PeakWingate_W_kg)) + geom_boxplot() 
+ggplot(nhldata, aes(factor(Position), BenchPress_lbperlbBodyWeight)) + geom_boxplot() 
 ```
 
 ```{r}
-ggplot(nhldata, aes(factor(Position), WingatePercentDrop)) + geom_boxplot() 
+ggplot(nhldata, aes(factor(Position), PushUps_max)) + geom_boxplot() 
 ```
 
 ```{r}
-ggplot(nhldata, aes(factor(Position), VO2max_l_min)) + geom_boxplot()
+ggplot(nhldata, aes(factor(Position), PushUpsxBody.Weight)) + geom_boxplot()
 ```
 
 ```{r}
-ggplot(nhldata, aes(factor(Position), VO2max_ml_kg_min)) + geom_boxplot()
+ggplot(nhldata, aes(factor(Position), Push.Strength..lb.)) + geom_boxplot()
 ```
 
 ```{r}
-ggplot(nhldata, aes(factor(Position), VO2max_watts_kg)) + geom_boxplot()
-```
-
-```{r}
-ggplot(nhldata, aes(factor(Position), LewisAvg_.Pause_watts)) + geom_boxplot()
-```
-
-```{r}
-ggplot(nhldata, aes(factor(Position), LewisAvg_.Pause_watts_kg)) + geom_boxplot()
+ggplot(nhldata, aes(factor(Position), PushStrength_lbperlbBodyWeight)) + geom_boxplot()
 ```
 
 The fact that there is not much difference between the absolute and relative versions of these data is really due to the fact that there is not much of a difference between the groups in body mass:
 ```{r}
-ggplot(nhldata, aes(factor(Position), Weight_kg)) + geom_boxplot()
+ggplot(nhldata, aes(factor(Position), Weight_lb)) + geom_boxplot()
 ```
 
-Just for kicks - I also used a t-test to see whether there were differences between the positions (the graphics suggest not - but wanted to see if the null was accepted in the t-test (i.e. p > 0.05 if we accept an alpha of 0.05))
+
+### 4. T-tests 
+
+to compare group differences (statistically test the null hypothesis that the groups are not different)
+(the graphics suggest no difference - but wanted to see if the null was accepted in the t-test (i.e. p > 0.05 if we accept an alpha of 0.05))
 
 ```{r}
-t.test(nhldata$Weight_kg~nhldata$Position)
-t.test(nhldata$WingatePeak_Watts~nhldata$Position)
-t.test(nhldata$PeakWingate_W_kg~nhldata$Position)
-t.test(nhldata$WingatePercentDrop~nhldata$Position)
-t.test(nhldata$VO2max_l_min~nhldata$Position)
-t.test(nhldata$VO2max_ml_kg_min~nhldata$Position)
-t.test(nhldata$VO2max_watts~nhldata$Position)
-t.test(nhldata$VO2max_watts_kg~nhldata$Position)
-t.test(nhldata$LewisAvg_.Pause_watts~nhldata$Position)
-t.test(nhldata$LewisAvg_.Pause_watts_kg~nhldata$Position)
+t.test(nhldata$Weight_lb~nhldata$Position)
+t.test(nhldata$BenchPress_reps150~nhldata$Position)
+t.test(nhldata$BenchPress_lbperlbBodyWeight~nhldata$Position)
+t.test(nhldata$PushUps_max~nhldata$Position)
+t.test(nhldata$PushUpsxBody.Weight~nhldata$Position)
+t.test(nhldata$Push.Strength..lb.~nhldata$Position)
+t.test(nhldata$PushStrength_lbperlbBodyWeight~nhldata$Position)
 ```
 
-Clearly there are no significant differences in this data set between these players. Makes for an interesting report though - particularly if there are papers out there showing a difference in older players. Raises the question of whether the players have not been playing long enough to be trained into their position where they partially adapt based on their role.
+### Thoughts
+
+Clearly there are no significant differences in this data set between these players. You should see if have been any other analyses looking at this question in NHL players, particularly older players. These players are just entering their potential professional career. After being drafted many of them spend years in college or waiting to actually get to the NHL (playing in other leagues). If older NHL players show a difference, perhaps it comes about from the rigours of training as they continue to develop as players. These players maybe have not been playing long enough to be trained into their position where they partially adapt based on their role.
