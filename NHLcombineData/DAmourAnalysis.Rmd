@@ -1,33 +1,40 @@
 ---
 title: "Almonte - NHL draft combine data"
 author: "Sean Collins"
-date: "December 7, 2015"
+date: "December 8, 2015"
 output: html_document
 ---
-## DRAFT IN PROGRESS
-
-Currently just a copy of the Almonte analysis - need to change the variables for the following question:
+Data analysis performed for D'Amour's physiology of exercise lab report
 
 "bench, pushups, and push power would be the best way to represent the "hitting strength" for the players. Id compare the two numbers for bench and pushups to factor in body weight too so its not looking at if heavier people are stronger as well""
 
-Data analysis performed for D'Amour's physiology of exercise lab report
+Question: Do skating players (forward and defense) entering the NHL combine scouting tests have different testing results indices of "hitting strength"? 
 
-Question: Do skating players (forward and defense) entering the NHL combine scouting tests have different testing results in key indices of aerobic and anaerobic fitness?
+Operationalize "hitting strength" as: bench, pushups, and push power; Consider both absolute values and normalize for body mass
 
-Expected: Forwards will have a higher aerobic fitness, defense will have a higher peak power, but also a higher fatigue index percent (they will fatigue faster).
-
-Request:
-Compare averages-- mean, standard deviation, etc.-- of both groups: please add histograms - I went with boxplots thinking they would provide a better approach to comparing the groups; tables -all the data you need for tables is included but not in a presentable way so you can select what you want and add to a table
-Aerobic fitness with VO2 max (ml/kg/min)
-Anaerobic fitness with peak power
-Anaerobic fatigue index
-
-Other variables you might be interested have been added - you can disregard; if it is disruptive to have them included here they can be removed
+Expected: Defense will have a higher "hitting strength"
 
 Note: goalies are not included in the analysis
 
-Analysis
+###Approach:
+1. Load and clean data (take complete cases and variables of interest)
+2. Descriptive statistics for each group
+3. Boxplots to compare groups
+4. t-tests to compare group differences (statistically test the null hypothesis that the groups are not different)
 
+All analyses performed in R (version 3.2.0 (www.r-project.org)) using RStudio (www.rstudio.com)
+
+####Variables
+BenchPress_reps150
+BenchPress_lbperlbBodyWeight
+PushUps_max
+PushUpsxBody.Weight
+Push.Strength..lb.
+PushStrength_lbperlbBodyWeight
+
+Note: since data includes body mass normalized variables, this analysis will not calculate those variables; therefore the normalizations are based on "lbs" not "kgs" since that is how the NHL has done the processing
+
+###Loading R packages, getting data ready
 ```{r}
 # Load necessary R packages
 library(dplyr) #For data manipulation
@@ -42,20 +49,12 @@ setwd("~/physExLab/NHLcombinedata")
 # Load data
 nhldata<-read.csv("data_position.csv")
 
-#Create weight in kg variable
-nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
-
-#Create aerobic test peak watts / kg variable
-nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
-
-#Create Lewis average watts / kg
-nhldata<-mutate(nhldata, LewisAvg_.Pause_watts_kg= LewisAvg_.Pause_watts/Weight_kg)
-
 #Create dataframe with only the variables we are interested in
-nhldata<-select(nhldata,PosNumeric, Position, Weight_kg, WingatePeak_Watts, PeakWingate_W_kg, WingatePercentDrop, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg, LewisAvg_.Pause_watts, LewisAvg_.Pause_watts_kg)
+nhldata<-select(nhldata,PosNumeric, Position, Weight_lb,BenchPress_reps150, BenchPress_lbperlbBodyWeight, PushUps_max, PushUpsxBody.Weight, Push.Strength..lb., PushStrength_lbperlbBodyWeight)
 ```
 
-Here is a summary of the resulting dataframe. As you can see there are missing values in most variables.
+#### Loaded data with all forwards and defense (including subjects with missing values)
+As you can see there are missing values in most variables.
 ```{r}
 str(nhldata)
 summary(nhldata)
@@ -63,7 +62,10 @@ summary(nhldata)
 
 But we are really only interested in cases that have complete data - so need to eliminate cases with missing data (note - if we had plans for a publication we would be much more cautious about doing this)
 
-As you can see we have gone from 90 subjects to 86 subjects - so 4 subjects had incomplete data in the variables of interest.
+#### Cleaning loaded data to extract only "complete cases"
+A complete case has all of the variables of interest
+
+We have gone from 90 subjects to 82 subjects - so 8 subjects had incomplete data in the variables of interest.
 
 ```{r}
 nhldata <- nhldata[complete.cases(nhldata), ]
@@ -71,14 +73,14 @@ str(nhldata)
 summary(nhldata)
 ```
 
-Descriptive summary of the (potential) variables of interest (all subjects):
+##### Descriptive summary (both groups):
 ```{r}
 options(scipen=100) #supresses scientific notation of output
 options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
 stat.desc(nhldata, basic=F) #runs basic stats
 ```
 
-Descriptive summary of the (potential) variables of interest for forwards:
+##### Descriptive summary for forwards:
 ```{r}
 forwards<-filter(nhldata,PosNumeric==1)
 options(scipen=100) #supresses scientific notation of output
@@ -86,7 +88,7 @@ options(digits=2) #suggests a limit of 2 significant digits - but it is only a s
 stat.desc(forwards, basic=F) #runs basic stats
 ```
 
-Descriptive summary of the (potential) variables of interest for defenders:
+##### Descriptive summary for defenders:
 ```{r}
 defense<-filter(nhldata,PosNumeric==2)
 options(scipen=100) #supresses scientific notation of output
@@ -94,6 +96,7 @@ options(digits=2) #suggests a limit of 2 significant digits - but it is only a s
 stat.desc(defense, basic=F) #runs basic stats
 ```
 
+###NOTE - LEFT OFF HERE
 
 Decided to use Boxplots - The box plot (a.k.a. box and whisker diagram) is a standardized way of displaying the distribution of data based on the five number summary: minimum, first quartile, median, third quartile, and maximum. Outliers are plotted as individual points. They are easier to look at for comparing two factors of a variable (forward, defense) 
 
