@@ -1,39 +1,63 @@
 ---
 title: "AlbertAnalysis"
 author: "Sean Collins"
-date: "December 7, 2015"
+start date: "December 7, 2015"
+revised data: "December 9, 2015"
 output: html_document
 ---
 
-### Draft in progress
- 
-Data analysis performed for Albert's physiology of exercise lab report
+### Data analysis performed for Albert's physiology of exercise lab report
 
 Based on the Astrand et al, 1964 data set
 
 ### Hypotheses 
 1. Inverse relationship between vo2max and resting heart rate
-2. Submaximal heart rate and max heart rate relate to max vo2. 
+2. Submaximal heart rate and max heart rate relate to max vo2
 
 
-Astrand database: heart rate will be compared to the different stages of the vo2max and see if there is a correlation. Also resting heart rate will be compared to max vo2 and submaximal heart rate and max heart rate. Max heart rate will be calculate for all subjects as well. 
+### Analysis strategy
 
-To do this, there will be many graphs, scatter plots and data charts."
+The only variable that needs modification is vo2, currently in absolute units (L/min), makes more sense to change units to ml/kg/min
+
+#### Hypothesis 1
+
+Scatter plot and linear regression model between resting heart rate and vo2max 
+
+#### Hypothesis 2
+
+Scatter plot and linear regression model between maximal heart rate and vo2max
+
+Scatter plot and linear regression model between submaximal heart (stage 2 of the exercise test) and vo2max. Stage 2 was chosen because all subjects were performing the same rate of work and none of the subjects had achieved their vo2max yet (i.e. some had reached max at the rate of work associated with stage 3 of the protocol)
+
+### Analysis steps
+1. Load R packages, load data, organize data for analysis
+2. Descriptive statistics of relevant variables
+3. Univariate distributions with boxplots
+4. Bivariate distributions with scatterplots
+5. Linear regression
+
+For the sake of presentation 4 & 5 will be combined so that output releated to the linear regression model will follow the scatterplot of the same variables.
 
 
-Code from prior analysis of this paper:
-#Aerobic capacity based on Astrand's classic paper in 1964
+### Load and clean data for analysis 
 ```{r}
 library(dplyr)
 library(ggplot2)
 
 setwd("~/physexlab/Astrand_1964")
 data <- read.csv("data.csv")
-data<-tbl_df(data)
-data <- mutate(data,VO2_mlkg = (VO2*1000)/weight, METs = VO2_mlkg/3.5, AV_diff = AV_diff/100, SV_L = SV/1000, SV_mlkg = SV/weight, Q_mlkg = (Q*1000)/weight)
-data$stage <- as.factor(data$stage)
-by_stage <- group_by(data,stage)
-summarize(by_stage, mean(METs), mean(VO2_mlkg), mean(VO2), mean(Q), mean(Q_mlkg), mean(AV_diff), mean(HR), mean(SV), mean(SV_L), mean(SV_mlkg), mean(heartVolume))
+data <- mutate(data,VO2_mlkg = (VO2*1000)/weight)
+data<-select(data, age, height, weight, stage, rest, max, HR, VO2_mlkg)
+rest<-filter(data,rest==1)
+rest<-select(rest,age, height, weight,HR, VO2_mlkg)
+rest<- rename(rest, restHR = HR, restVO2_mlkg = VO2_mlkg)
+max<-filter(data,max==1)
+max<-select(max,HR, VO2_mlkg)
+max<-select(max,age, height, weight,HR, VO2_mlkg)
+max<- rename(max, maxHR = HR, maxVO2_mlkg = VO2_mlkg)
+stage2<-filter(data,stage==2)
+stage2<-select(stage2,HR, VO2_mlkg)
+stage2<- rename(stage2, stage2HR = HR, stage2VO2_mlkg = VO2_mlkg)
 ```
 
 par(mfrow = c(2, 3))

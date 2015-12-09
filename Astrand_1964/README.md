@@ -10,6 +10,8 @@ weight
 plasma volume
 heart volume
 stage (of exercise test)
+rest (1 if resting stage, NA otherwise)
+max (1 if maximum achieved exercise stage, NA otherwise)
 VO2
 Q
 HR
