@@ -32,91 +32,112 @@ Scatter plot and linear regression model between submaximal heart (stage 2 of th
 ### Analysis steps
 1. Load R packages, load data, organize data for analysis
 2. Descriptive statistics of relevant variables
-3. Univariate distributions with boxplots
+3. Univariate distributions with histograms (no need to include all of these)
 4. Bivariate distributions with scatterplots
 5. Linear regression
 
 For the sake of presentation 4 & 5 will be combined so that output releated to the linear regression model will follow the scatterplot of the same variables.
 
-
 ### Load and clean data for analysis 
 ```{r}
-library(dplyr)
-library(ggplot2)
+library(dplyr) #For data manipulation
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+library(psych) #For descriptive statistics
 
 setwd("~/physexlab/Astrand_1964")
-data <- read.csv("data.csv")
-data <- mutate(data,VO2_mlkg = (VO2*1000)/weight)
-data<-select(data, age, height, weight, stage, rest, max, HR, VO2_mlkg)
-rest<-filter(data,rest==1)
-rest<-select(rest,age, height, weight,HR, VO2_mlkg)
+data <- read.csv("data.csv") #load the data into R
+data <- mutate(data,VO2_mlkg = (VO2*1000)/weight) #create VO2 in ml/kg/min
+data<-select(data, subject, age, height, weight, stage, rest, max, HR, VO2_mlkg) #select variables of interest
+#need to arrange data so that each row is one subject and contains the resting, stage 2 and max HR and VO2, basically going from a vertical data base with >1 rows per subject; to a horizonal data base with 1 row per subject
+#Achieve this by cutting the data into separate dataframes for each condition (rest, stage 2, max)
+rest<-filter(data,rest==1) #resting data
+rest<-select(rest,subject, age, height, weight,HR, VO2_mlkg)
 rest<- rename(rest, restHR = HR, restVO2_mlkg = VO2_mlkg)
-max<-filter(data,max==1)
-max<-select(max,HR, VO2_mlkg)
-max<-select(max,age, height, weight,HR, VO2_mlkg)
+max<-filter(data,max==1) #max data
+max<-select(max,subject, HR, VO2_mlkg)
 max<- rename(max, maxHR = HR, maxVO2_mlkg = VO2_mlkg)
-stage2<-filter(data,stage==2)
-stage2<-select(stage2,HR, VO2_mlkg)
+stage2<-filter(data,stage==2) #stage 2 data
+stage2<-select(stage2,subject, HR, VO2_mlkg)
 stage2<- rename(stage2, stage2HR = HR, stage2VO2_mlkg = VO2_mlkg)
+#now join the separate data frames back together into one dataframe
+data<-full_join(rest,max,by="subject")
+data<-full_join(data, stage2, by="subject")
 ```
 
-par(mfrow = c(2, 3))
-with(data, plot(stage, VO2_mlkg, xlab="Stage", ylab="VO2 (ml/kg/min)"))
-with(data, plot(stage, METs, xlab = "Stage", ylab="METs"))
-with(data, plot(stage, Q_mlkg, xlab="Stage", ylab="Cardiac Output (ml/kg/min)"))
-with(data, plot(stage, AV_diff, xlab="Stage", ylab="(a-v)O2 difference"))
-with(data, plot(stage, HR, xlab="Stage", ylab="Heart Rate"))
-with(data, plot(stage, SV,xlab="Stage", ylab="Stroke Volume"))
+### Analysis
+
+#### Descriptive statistics of relevant variables
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
+stat.desc(data, basic=F) #runs basic stats
+```
+
+#### Univariate distributions with histograms
+
+```{r}
+qplot(age, data=data, geom="histogram")
+qplot(restHR, data=data, geom="histogram")
+qplot(maxHR, data=data, geom="histogram")
+qplot(maxVO2_mlkg, data=data, geom="histogram")
+qplot(stage2HR, data=data, geom="histogram")
+qplot(stage2VO2_mlkg, data=data, geom="histogram")
+```
+
+#### Bivariate distributions with scatterplots and Linear regression
+
+##### Is there an inverse relationship between vo2max and resting heart rate
+```{r}
+qplot(y=maxVO2_mlkg, x=restHR, data=data) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+restHR_VO2maxFit <- lm(maxVO2_mlkg ~ restHR, data=data) #fit model
+summary(restHR_VO2maxFit) # show results 
+```
+
+###### Thoughts
+Interestingly there is a remarkably weak relationship in this sample between resting HR and max VO2. You should think about the reasons for this lack of a relatioonship for what is usually considered a well known and understood relationship. Do you think it could have anything to do with the study methods and when they took this apparant "resting heart rate"? Could subjects have been anxious prior to the exercise test - increasing their HR in such a way that it was no longer a true resting heart rate, and not predictive of what their true resting heart may be?
+
+#### Is there an inverse relationship between submaximal heart rate and max vo2?
+```{r}
+qplot(y=maxVO2_mlkg, x=stage2HR, data=data) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+stage2HR_VO2maxFit <- lm(maxVO2_mlkg ~ stage2HR, data=data) #fit model
+summary(stage2HR_VO2maxFit) # show results 
+```
+
+###### Thoughts
+Here we see a much stronger relationship between stage 2 HR (submaximal workload that all subjects were able to achieve) and the VO2 max. You should discuss why it might be the case that resting HR was not strongly associated, but that submaximal HR is more strongly associated with VO2 max in this sample, again, considering the factors that could impact resting HR. Is it reasonable to suspect the pre test nervous HR response would be less of a factor once the person is in stage2 of the actual test, so that their physiological capacity has a stronger impact on their HR than nervousness?
 
 
-dev.copy(png, file = "plot.png", width = 480, height = 480)
-dev.off()
+#### #### Is there a relationship between maximal heart rate and max vo2?
+```{r}
+qplot(y=maxVO2_mlkg, x=maxHR, data=data) + stat_smooth(method=lm, formula=y~x)
+```
 
-par(mfrow = c(1, 1))
-with(data, plot(stage, VO2_mlkg, xlab="Stage", ylab="VO2 (ml/kg/min)"))
-dev.copy(png, file = "VO2.png", width = 480, height = 480)
-dev.off()
+```{r}
+maxHR_VO2maxFit <- lm(maxVO2_mlkg ~ maxHR, data=data) #fit model
+summary(maxHR_VO2maxFit) # show results 
+```
 
-par(mfrow = c(1, 1))
-with(data, plot(stage, Q_mlkg, xlab="Stage", ylab="Cardiac Output (ml/kg/min)"))
-dev.copy(png, file = "Q.png", width = 480, height = 480)
-dev.off()
+###### Thoughts
+As expected there is not a relationship between max HR and max VO2 - this coheres with our understanding. The primary determinant of max HR is age; and for any given age there is a lot of variability in VO2 max. Also - there is very little variance in this samples age range.
 
-par(mfrow = c(1, 1))
-with(data, plot(stage, AV_diff, xlab="Stage", ylab="(a-v)O2 difference"))
-dev.copy(png, file = "AV.png", width = 480, height = 480)
-dev.off()
+#### For kicks - Max HR and age in this sample
+```{r}
+qplot(y=maxHR, x=age, data=data) + stat_smooth(method=lm, formula=y~x)
+```
 
+```{r}
+age_maxHRFit <- lm(maxHR ~ age, data=data) #fit model
+summary(age_maxHRFit) # show results 
+```
 
-par(mfrow = c(1, 1))
-with(data, plot(stage, HR, xlab="Stage", ylab="Heart Rate"))
-dev.copy(png, file = "hr.png", width = 480, height = 480)
-dev.off()
-
-par(mfrow = c(1, 1))
-with(data, plot(stage, SV,xlab="Stage", ylab="Stroke Volume"))
-dev.copy(png, file = "sv.png", width = 480, height = 480)
-dev.off()
-
-
-write.csv(data,"AstrandData1964.csv")
-
-rest <- filter(data,stage == 0)
-hist(rest$heartVolume)
-plot(data$stage,data$VO2)
-hist(data$AV_diff)
-
-#Confirm that VO2 in L/min is the same as Q * AV_diff in this data set
-data <- mutate(data,calcVO2 = AV_diff * Q)
-data$stage <- as.factor(data$stage)
-by_stage <- group_by(data,stage)
-summarize(by_stage, mean(VO2), mean(calcVO2))
-
-summarize(by_stage, mean(Q), min(Q), max(Q))
-
-#A function to calculate VO2Max_est
-vo2_function <- function(Q, AV_diff){
-	vo2<-Q*AV_diff
-}
+###### Thoughts
+Here we see that there is a moderate association between age and maxHR in this sample - which is pretty amazing to me given the really small age range of the subjects. It seems the two 30 year olds are driving the relationship with their lower max HRs. Interesting.y, their max HRs are even lower than the standard (220 - age) equation would predict. This is not uncommon on the bike ergometer where LE fatigue tends to limit people due to the isolated muscle demand in the quadriceps. In fact - as you can see - the entire sample has a slightly lower max HR than the (220-age) equation would predict.
 
 

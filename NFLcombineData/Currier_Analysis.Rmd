@@ -1,0 +1,174 @@
+---
+title: "Currier_Analysis"
+author: "Sean Collins"
+date: "December 9, 2015"
+output: html_document
+---
+Analysis for Currier's physiology of exercise lab report 
+
+Using the NFL Combine Data (Freely available online): http://nflcombineresults.com/nflcombinedata.php
+
+Decided to use "all40yard" - not just the NFL combined timed sprints; most likely includes sprints times at "Pro Day" at the respective college programs (according to a football source)
+
+Goal: "to find out which is a better indicator of a faster 40 yard dash time. Either the shuttle time or vertical jump, among  wide receivers"
+
+
+### Analysis approach
+1. Load, select and clean data relevant for this analysis
+2. Descriptive statistics of relevant data
+3. Univariate distributions of relevant data
+4. Bivariate distributions with scatterplots
+5. Linear regression
+
+For the sake of presentation 4 & 5 will be combined so that output releated to the linear regression model will follow the scatterplot of the same variables.
+
+
+## Setting working directory and loading required R packages:
+```{r}
+setwd("~/physexlab/NFLcombineData")
+library(dplyr) #For data manipulation
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+library(psych) #For descriptive statistics
+library(gtools)
+
+```
+
+## Load, select and clean data relevant for this analysis
+
+```{r}
+nfldata<-read.csv("data_cleaned.csv")
+nfldata<-mutate(nfldata, Weight_kg = Weight_lbs/2.2)
+nfldata <- mutate(nfldata, Height_m = Height_in*0.0254)
+nfldata <- mutate(nfldata, VertJump_m = VertLeap_in*0.0254)
+nfldata <- mutate(nfldata, LewisPower = sqrt(4.9)*Weight_kg*9.81*sqrt(VertJump_m))
+nfldata <- mutate(nfldata, SayersPower = (60.7*(VertJump_m*100))+(45.3*Weight_kg-2055))
+
+#Select variables of interest 
+nfldata <- select(nfldata, Year, POS, Weight_lbs, Shuttle, all40yard, LewisPower, SayersPower)
+
+#Filter based on rows of interest (position = WR)
+nfldata<-filter(nfldata, grepl('WR', POS))
+
+#Keep only complete cases to avoid missing values
+nfldata <- nfldata[complete.cases(nfldata), ]
+```
+
+## Summary of data after the above process
+```{r}
+str(nfldata)
+summary(nfldata)
+```
+457 complete cases with the variables of interest, all WRs across all years (1999 - 2015)
+
+## Descriptive statistics of relevant data
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
+stat.desc(nfldata, basic=F) #runs basic stats
+```
+
+## Univariate distributions of relevant data
+```{r}
+qplot(Shuttle, data=nfldata, geom="histogram")
+qplot(all40yard, data=nfldata, geom="histogram")
+qplot(LewisPower, data=nfldata, geom="histogram")
+qplot(SayersPower, data=nfldata, geom="histogram")
+qplot(Weight_lbs, data=nfldata, geom="histogram")
+```
+
+All well normally distributed - except for weight in pounds. There seem to be two distinct groups of WRs in the draft, those that are heavy and those that are light. I will explore this more after doing the primary analysis.
+
+## Bivariate distributions with scatterplots and Linear regression
+40 yard dash is treated as the Y axis (dependant) variable in all plots and models
+
+### Shuttle
+```{r}
+qplot(y=all40yard, x=Shuttle, data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+Shuttle_SprintFit <- lm(all40yard ~ Shuttle, data=nfldata) #fit model
+summary(Shuttle_SprintFit) # show results 
+```
+
+### Lewis Power (average power from vertical jump)
+```{r}
+qplot(y=all40yard, x=LewisPower, data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+LewisPower_SprintFit <- lm(all40yard ~ LewisPower, data=nfldata) #fit model
+summary(LewisPower_SprintFit) # show results 
+```
+
+### Sayers Power (peak power from vertical jump)
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+SayersPower_SprintFit <- lm(all40yard ~ SayersPower, data=nfldata) #fit model
+summary(SayersPower_SprintFit) # show results 
+```
+
+### Does combining shuttle and sayers power improve the relationship with 40 yard sprint?
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata, geom=c("point", "smooth"),method="lm",size = Shuttle)
+```
+
+```{r}
+SayersShuttle_SprintFit <- lm(all40yard ~ SayersPower + Shuttle, data=nfldata) #fit model
+summary(SayersShuttle_SprintFit) # show results 
+```
+With both sayers and shuttle in the regression model they are both significant preditors of sprint; BUT the overall R^2 is still fairly low.
+
+Interestingly I think this is a good thing. If these three variables were highly related it would beg the question about why more than one or two tests are necessary. It is their lack of association that makes them each an important piece of infromation for the evaluation of athletic physicality.
+
+### What about weight?
+As pointed out earlier there are two distinct groups of WR weights based on the histogram:
+```{r}
+qplot(Weight_lbs, data=nfldata, geom="histogram")
+```
+
+Does weight contribute to our model of 40 yard sprint time?
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata, geom=c("point", "smooth"),method="lm",size = Shuttle, color = Weight_lbs)
+```
+
+```{r}
+SayersShuttleWeight_SprintFit <- lm(all40yard ~ SayersPower + Shuttle + Weight_lbs, data=nfldata) #fit model
+summary(SayersShuttleWeight_SprintFit) # show results 
+```
+
+Just a bit - the overall R^2 has increased a bit; and weight is a significant predictor in the model in the direction you would expect, the more weight the greater the time (greater time means slower)
+
+#### Can this be made more clear? 
+Another way to try this is to create a factor (category) variable based on the weight distribution. The code below breaks weight into 2 categories based on the distribution.
+```{r}
+nfldata$wt_quantiles<-quantcut(nfldata$Weight_lbs, q=seq(0,1,by=0.5), na.rm=TRUE)
+```
+
+We can see that this process does a nice job of partitioning the histogram from earlier into 4 discrete categories of weight. 
+```{r}
+qplot(Weight_lbs, data=nfldata, geom="histogram",color=nfldata$wt_quantiles)
+```
+
+Now the scatter plot with the weight grouping:
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata, geom=c("point", "smooth"),method="lm",size = Shuttle, color = nfldata$wt_quantiles)
+```
+
+```{r}
+SayersShuttleWeight2_SprintFit <- lm(all40yard ~ SayersPower + Shuttle + wt_quantiles, data=nfldata) #fit model
+summary(SayersShuttleWeight2_SprintFit) # show results 
+```
+While this factor (as opposed to continuous) approach is better visually with the scatter plot; it is not better mathematically. The factor variable for weight accounts for less of the variability in the data (lower R^2), which makes sense. 
+
+### Final thoughts -
+
+Seems to be some interesting findings to discuss - let me know if you have any questions, or based on the insights of this analysis whether you have any other questions that I might have time to do. This analysis would all be really easy with all the subjects as well (just have to change a bit of code at the beginning that only selects Wide Recievers). If you really really want to only look at WRs from 2014 I can also try to filter those cases alone. But - from this plot - I think you will see that while sprint time varies from year to year a bit; not by much, and there is no reason to specifically identify 2014 as far as I can see (the vertical black line is the mean of all years combined, and the dashed red lines represent the overall boundary +/- 1 standard deviation). Based on that - the year 2014 falls right at the mean (interestingly).
+
+```{r}
+ggplot(nfldata, aes(factor(Year), all40yard)) + geom_boxplot() + geom_hline(aes(yintercept=4.5)) + geom_hline(aes(yintercept=4.6039), colour="#BB0000", linetype="dashed") + geom_hline(aes(yintercept=4.4061), colour="#BB0000", linetype="dashed")
+```
