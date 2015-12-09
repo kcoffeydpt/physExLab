@@ -1,0 +1,205 @@
+---
+title: "Brewster_Analysis"
+author: "Sean Collins"
+date: "December 9, 2015"
+output: html_document
+---
+Analysis for Brewster's physiology of exercise lab report 
+
+Using the NFL Combine Data (Freely available online): http://nflcombineresults.com/nflcombinedata.php
+
+Decided to use "all40yard" - not just the NFL combined timed sprints
+
+Goal: test the relationship between the 3 cone test, 40 yard dash times and power produced from vertical jump
+
+Will stick with the Sayers peak power from the vertical jump
+
+
+### Analysis approach
+1. Load, select and clean data relevant for this analysis
+2. Descriptive statistics of relevant data
+3. Univariate distributions of relevant data
+4. Bivariate distributions with scatterplots
+5. Linear regression
+
+For the sake of presentation 4 & 5 will be combined so that output releated to the linear regression model will follow the scatterplot of the same variables.
+
+
+## Setting working directory and loading required R packages:
+```{r}
+setwd("~/physexlab/NFLcombineData")
+library(dplyr) #For data manipulation
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+library(psych) #For descriptive statistics
+library(gtools)
+
+```
+
+## Load, select and clean data relevant for this analysis
+
+```{r}
+nfldata<-read.csv("data_cleaned.csv")
+nfldata<-mutate(nfldata, Weight_kg = Weight_lbs/2.2)
+nfldata <- mutate(nfldata, Height_m = Height_in*0.0254)
+nfldata <- mutate(nfldata, VertJump_m = VertLeap_in*0.0254)
+nfldata <- mutate(nfldata, LewisPower = sqrt(4.9)*Weight_kg*9.81*sqrt(VertJump_m))
+nfldata <- mutate(nfldata, SayersPower = (60.7*(VertJump_m*100))+(45.3*Weight_kg-2055))
+
+#Select variables of interest 
+nfldata <- select(nfldata, Year, POS, Weight_lbs, X3Cone, all40yard, SayersPower)
+
+#Keep only complete cases to avoid missing values
+nfldata <- nfldata[complete.cases(nfldata), ]
+```
+
+## Summary of data after the above process
+```{r}
+str(nfldata)
+summary(nfldata)
+```
+3590 complete cases with the variables of interest, all positions (1999 - 2015)
+
+## Descriptive statistics of relevant data
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
+stat.desc(nfldata, basic=F) #runs basic stats
+```
+
+## Univariate distributions of relevant data
+```{r}
+qplot(X3Cone, data=nfldata, geom="histogram")
+qplot(all40yard, data=nfldata, geom="histogram")
+qplot(SayersPower, data=nfldata, geom="histogram")
+qplot(Weight_lbs, data=nfldata, geom="histogram")
+```
+
+All well normally distributed - except for weight in pounds. There seem to be four distinct groups of weight in the draft. I will explore this more after doing the primary analysis.
+
+## Bivariate distributions with scatterplots and Linear regression
+
+
+### X3Cone and 40 yard dash
+```{r}
+qplot(y=all40yard, x=X3Cone, data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+X3Cone_SprintFit <- lm(all40yard ~ X3Cone, data=nfldata) #fit model
+summary(X3Cone_SprintFit) # show results 
+```
+
+### Sayers Power (peak power from vertical jump)
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+SayersPower_SprintFit <- lm(all40yard ~ SayersPower, data=nfldata) #fit model
+summary(SayersPower_SprintFit) # show results 
+```
+
+### Sayers Power (peak power from vertical jump) and 40 yard dash
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+SayersPower_SprintFit <- lm(all40yard ~ SayersPower, data=nfldata) #fit model
+summary(SayersPower_SprintFit) # show results 
+```
+
+### Sayers Power (peak power from vertical jump) and X3Cone
+```{r}
+qplot(y=X3Cone, x=SayersPower, data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+SayersPower_X3ConeFit <- lm(X3Cone ~ SayersPower, data=nfldata) #fit model
+summary(SayersPower_X3ConeFit) # show results 
+```
+
+### Multivariable regression Does combining X3Cone and sayers power predict 40 yard dash?
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata, geom=c("point", "smooth"),method="lm",size = X3Cone)
+```
+
+```{r}
+SayersX3Cone_SprintFit <- lm(all40yard ~ SayersPower + X3Cone, data=nfldata) #fit model
+summary(SayersX3Cone_SprintFit) # show results 
+```
+With both sayers and X3Cone in the regression model they are both significant preditors of sprint; and the overall R^2 is pretty good, but not much better than just the cone test alone.
+
+
+### What about weight?
+As pointed out earlier there are two distinct groups of WR weights based on the histogram:
+```{r}
+qplot(Weight_lbs, data=nfldata, geom="histogram")
+```
+
+Does weight contribute to our model of 40 yard sprint time?
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata, geom=c("point", "smooth"),method="lm",size = X3Cone, color = Weight_lbs)
+```
+
+```{r}
+SayersX3ConeWeight_SprintFit <- lm(all40yard ~ SayersPower + X3Cone + Weight_lbs, data=nfldata) #fit model
+summary(SayersX3ConeWeight_SprintFit) # show results 
+```
+
+Knowing body weight increases the overall R^2 significantly; and weight is a significant predictor in the model in the direction you would expect, the more weight the greater the time (greater time means slower)
+
+#### Can this be made more clear? 
+Another way to try this is to create a factor (category) variable based on the weight distribution. The code below breaks weight into 2 categories based on the distribution.
+```{r}
+nfldata$wt_quantiles<-quantcut(nfldata$Weight_lbs, q=seq(0,1,by=0.25), na.rm=TRUE)
+```
+
+We can see that this process does a nice job of partitioning the histogram from earlier into 4 discrete categories of weight. 
+```{r}
+qplot(Weight_lbs, data=nfldata, geom="histogram",color=nfldata$wt_quantiles)
+```
+
+Now the scatter plot with the weight grouping:
+```{r}
+qplot(y=all40yard, x=SayersPower, data=nfldata, geom=c("point", "smooth"),method="lm",size = X3Cone, color = nfldata$wt_quantiles)
+```
+
+```{r}
+SayersX3ConeWeight2_SprintFit <- lm(all40yard ~ SayersPower + X3Cone + wt_quantiles, data=nfldata) #fit model
+summary(SayersX3ConeWeight2_SprintFit) # show results 
+```
+While this factor (as opposed to continuous) approach is better visually with the scatter plot; it is not better mathematically. The factor variable for weight accounts for less of the variability in the data (lower R^2), which makes sense. 
+
+
+#### To get a sense of positional differences in the variable above
+
+Here are boxplots of each variable and how it varies by position - the black line in the middle of the plot is the overall mean; the upper and lower red lines are the +/- 1 Standard Deviation values.
+##### 40 yard dash
+
+```{r}
+ggplot(nfldata, aes(factor(POS), all40yard)) + geom_boxplot() + geom_hline(aes(yintercept=mean(all40yard))) + geom_hline(aes(yintercept=(mean(all40yard)-sd(all40yard))), colour="#BB0000") + geom_hline(aes(yintercept=(mean(all40yard)+sd(all40yard)), colour="#BB0000"))
+```
+
+##### Sayers Power
+
+```{r}
+ggplot(nfldata, aes(factor(POS), SayersPower)) + geom_boxplot() + geom_hline(aes(yintercept=mean(SayersPower))) + geom_hline(aes(yintercept=(mean(SayersPower)-sd(SayersPower))), colour="#BB0000") + geom_hline(aes(yintercept=(mean(SayersPower)+sd(SayersPower)), colour="#BB0000"))
+```
+
+##### Cone test
+
+```{r}
+ggplot(nfldata, aes(factor(POS), X3Cone)) + geom_boxplot() + geom_hline(aes(yintercept=mean(X3Cone))) + geom_hline(aes(yintercept=(mean(X3Cone)-sd(X3Cone))), colour="#BB0000") + geom_hline(aes(yintercept=(mean(X3Cone)+sd(X3Cone)), colour="#BB0000"))
+```
+
+##### Weight (lbs)
+
+```{r}
+ggplot(nfldata, aes(factor(POS), Weight_lbs)) + geom_boxplot() + geom_hline(aes(yintercept=mean(Weight_lbs))) + geom_hline(aes(yintercept=(mean(Weight_lbs)-sd(Weight_lbs))), colour="#BB0000") + geom_hline(aes(yintercept=(mean(Weight_lbs)+sd(Weight_lbs)), colour="#BB0000"))
+```
+
+### Final thoughts -
+
+Seems to be some interesting findings to discuss - let me know if you have any questions, or based on the insights of this analysis whether you have any other questions that I might have time to do. 
