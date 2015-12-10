@@ -1,10 +1,15 @@
 ---
-title: "Turcotte Analysis - NHL draft combine data"
+title: "Anaerobic Power - NHL draft combine data"
 author: "Sean Collins"
-date: "December 9, 2015"
+date: "December 10, 2015"
 output: html_document
 ---
-Data analysis performed for Turcott's physiology of exercise lab report
+## Anaerobic Power - NHL draft combine data
+
+### Draft analysis 
+
+#### Ideas that are being tested
+1. 
 
 ```{r}
 # Load necessary R packages
@@ -29,7 +34,7 @@ nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
 nhldata<-mutate(nhldata, rHR_wingate = WingateHR_End - WingateHR_1minPost)
 
 #Create dataframe with only the variables we are interested in
-nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, WingateMean_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg, WingatePercentDrop, WingateHR_End, WingateHR_1minPost, rHR_wingate)
+nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, WingateMean_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg,VO2max_PeakHR, WingatePercentDrop, WingateHR_End, WingateHR_1minPost, rHR_wingate)
 
 nhldata <- nhldata[complete.cases(nhldata), ]
 str(nhldata)
