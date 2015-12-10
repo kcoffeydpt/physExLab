@@ -1,0 +1,125 @@
+---
+title: "Anaerobic Power - NHL draft combine data"
+author: "Sean Collins"
+date: "December 10, 2015"
+output: html_document
+---
+## Anaerobic Power - NHL draft combine data
+
+### Draft analysis 
+
+#### Ideas that are being tested
+1. Relationship between peak HR on Wingate and peak HR on VO2 max bike test
+2. Relationship between Wingate HR 1 min post and peak HR on VO2 max bike test
+3. Relationship between peak HR on Wingate and Wingate HR 1 min post
+3. Relationship between peak Watts on Wingage and peak Watts on VO2 max bike test
+
+```{r}
+# Load necessary R packages
+library(dplyr) #For data manipulation
+library(reshape2) #For data manipulation related to plotting
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+
+# Set working directory - mac file system
+setwd("~/physExLab/NHLcombinedata")
+
+# Load data
+nhldata<-read.csv("data.csv")
+
+#Create weight in kg variable
+nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
+
+#Create aerobic test peak watts / kg variable
+nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
+
+#Create variable for how much the HR dropped after the Wingate
+nhldata<-mutate(nhldata, rHR_wingate = WingateHR_End - WingateHR_1minPost)
+
+#Create dataframe with only the variables we are interested in
+nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, WingateMean_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg,VO2max_PeakHR, WingatePercentDrop, WingateHR_End, WingateHR_1minPost, rHR_wingate, SayersPeak_NoPause_watts, LewisAvg_.NoPause_watts)
+
+nhldata <- nhldata[complete.cases(nhldata), ]
+```
+
+#### Descriptive stats of variables of interest
+Note: only subjects with complete cases are included
+
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #limits output to 2 significant digits
+stat.desc(nhldata, basic=F) #runs basic stats
+```
+
+#### Univariate distributions with histograms
+
+```{r}
+qplot(Weight_kg, data=nhldata, geom="histogram")
+qplot(WingatePeak_Watts, data=nhldata, geom="histogram")
+qplot(WingateMean_Watts, data=nhldata, geom="histogram")
+qplot(PeakWingate_W_kg, data=nhldata, geom="histogram")
+qplot(VO2max_l_min, data=nhldata, geom="histogram")
+qplot(VO2max_ml_kg_min, data=nhldata, geom="histogram")
+qplot(VO2max_watts, data=nhldata, geom="histogram")
+qplot(VO2max_PeakHR, data=nhldata, geom="histogram")
+qplot(WingatePercentDrop, data=nhldata, geom="histogram")
+qplot(WingateHR_End, data=nhldata, geom="histogram")
+qplot(WingateHR_1minPost, data=nhldata, geom="histogram")
+qplot(rHR_wingate, data=nhldata, geom="histogram")
+qplot(SayersPeak_NoPause_watts, data=nhldata, geom="histogram")
+qplot(LewisAvg_.NoPause_watts, data=nhldata, geom="histogram")
+``` 
+
+#### Relationship between peak HR on Wingate and peak HR on VO2 max bike test
+```{r}
+qplot(y=WingateHR_End, x=VO2max_PeakHR, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+WingateHR_VO2HR_Fit <- lm(WingateHR_End ~ VO2max_PeakHR, data = nhldata)
+summary(WingateHR_VO2HR_Fit)
+```
+
+#### Relationship between Wingate HR 1 min post and peak HR on VO2 max bike test
+```{r}
+qplot(y=WingateHR_1minPost, x=VO2max_PeakHR, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+WingateHRpost_VO2HR_Fit <- lm(WingateHR_1minPost ~ VO2max_PeakHR, data = nhldata)
+summary(WingateHRpost_VO2HR_Fit)
+```
+
+#### Relationship between peak HR on Wingate and Wingate HR 1 min post
+```{r}
+qplot(y=WingateHR_1minPost, x=WingateHR_End, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+WingateHRpost_VO2HR_Fit <- lm(WingateHR_1minPost ~ WingateHR_End, data = nhldata)
+summary(WingateHRpost_VO2HR_Fit)
+```
+
+#### Is there a better relationship between vertical jump power (peak and average) and the wingate power (peak and average) after subtracting what could be considered the aerobic component of power?
+
+```{r}
+qplot(y=WingatePeak_Watts, x=SayersPeak_NoPause_watts, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+qplot(y=WingateMean_Watts, x=LewisAvg_.NoPause_watts, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+Create variables
+```{r}
+nhldata<-mutate(nhldata, WingatePeakW_minusAerobicWatts= WingatePeak_Watts - VO2max_watts)
+nhldata<-mutate(nhldata, WingateMeanW_minusAerobicWatts= WingateMean_Watts - VO2max_watts)
+```
+
+```{r}
+qplot(y=WingatePeakW_minusAerobicWatts, x=SayersPeak_NoPause_watts, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+```{r}
+qplot(y=WingateMeanW_minusAerobicWatts, x=LewisAvg_.NoPause_watts, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```

@@ -1,0 +1,116 @@
+---
+title: "Anaerobic Power - NHL draft combine data"
+author: "Sean Collins"
+date: "December 10, 2015"
+output: html_document
+---
+## Anaerobic Power - NHL draft combine data
+
+### Draft analysis 
+
+#### Ideas that are being tested
+1. 
+
+```{r}
+# Load necessary R packages
+library(dplyr) #For data manipulation
+library(reshape2) #For data manipulation related to plotting
+library(ggplot2) #For plotting
+library(pastecs) #For descriptive statistics
+
+# Set working directory - mac file system
+setwd("~/physExLab/NHLcombinedata")
+
+# Load data
+nhldata<-read.csv("data.csv")
+
+#Create weight in kg variable
+nhldata<-mutate(nhldata, Weight_kg = Weight_lb/2.2)
+
+#Create aerobic test peak watts / kg variable
+nhldata<-mutate(nhldata, VO2max_watts_kg= VO2max_watts/Weight_kg)
+
+#Create variable for how much the HR dropped after the Wingate
+nhldata<-mutate(nhldata, rHR_wingate = WingateHR_End - WingateHR_1minPost)
+
+#Create dataframe with only the variables we are interested in
+nhldata<-select(nhldata,Weight_kg, WingatePeak_Watts, WingateMean_Watts, PeakWingate_W_kg, VO2max_l_min, VO2max_ml_kg_min, VO2max_watts, VO2max_watts_kg,VO2max_PeakHR, WingatePercentDrop, WingateHR_End, WingateHR_1minPost, rHR_wingate)
+
+nhldata <- nhldata[complete.cases(nhldata), ]
+str(nhldata)
+summary(nhldata)
+```
+
+As you can see we have gone from 100 subjects to 94 subjects - so 6 subjects had incomplete data in the variables of interest.
+
+Descriptive summary of the variables of interest:
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #limits output to 2 significant digits
+stat.desc(nhldata, basic=F) #runs basic stats
+```
+
+#### Univariate distributions with histograms
+
+```{r}
+qplot(VO2max_ml_kg_min, data=nhldata, geom="histogram")
+qplot(WingatePercentDrop, data=nhldata, geom="histogram")
+qplot(WingateHR_1minPost, data=nhldata, geom="histogram")
+qplot(WingateHR_End, data=nhldata, geom="histogram")
+qplot(rHR_wingate, data=nhldata, geom="histogram")
+``` 
+
+#### Does a higher VO2 max result in a greater drop in heart rate after the Wingate?
+```{r}
+qplot(y=rHR_wingate, x=VO2max_ml_kg_min, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+Looks like there is no relationship.
+
+#### Does a higher VO2 max result in lower 1 minute post heart rate after the Wingate?
+```{r}
+qplot(y=WingateHR_1minPost, x=VO2max_ml_kg_min, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+Looks like there is no relationship.
+
+#### How does post wingate HR relate to % drop in power during the wingate? 
+```{r}
+qplot(y=WingateHR_End, x=WingatePercentDrop, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+Looks like there is not much of a relationship. But does their peak watts influence the result?
+
+
+#### But does their peak watts influence the result?
+This plot is a repeat of the above with Wingate peak watts influencing the size of the point. From the points it looks like people with a higher peak watt have a greater drop off.
+```{r}
+qplot(WingatePercentDrop, WingateHR_End,data=nhldata,geom=c("point", "smooth"),method="lm",size = WingatePeak_Watts)
+```
+
+#### Do players with a higher peak watts on Wingate have a higher drop off during the test?
+```{r}
+qplot(y=WingatePercentDrop, x=WingatePeak_Watts, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+Seems to be the case. 
+To me this suggest that % drop is not due to poor aerobic capacity; but due to such high power output that players cannot sustain it. 
+
+#### How does wingate average power fit in to the above relationship?
+```{r}
+qplot(WingatePeak_Watts, WingatePercentDrop,data=nhldata,geom=c("point", "smooth"),method="lm",size = WingateMean_Watts)
+```
+
+It looks like mean watts may be related to peak watts (makes sense - a higher peak leads to a higher mean), but that it is not related to percent drop as the scatter of point size along the x axis is fairly consistent.
+
+Here is a plot of mean watts and percent drop to confirm those suspicions:
+```{r}
+qplot(y=WingatePercentDrop, x=WingateMean_Watts, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+
+And here we see the relationship between wingate mean watts and peak watts - relationships don't really get much better than this one....
+```{r}
+qplot(y=WingateMean_Watts, x=WingatePeak_Watts, data=nhldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+#### Thoughts - 
+Peak watts and mean watts are highly related; and peak watts and percent drop are also related. It makes me think that % drop which is supposed to be the fatigue index is really driven by having high peak power. In other words, it's not as much that someone cannot sustain their power; it is that people with really high power cannot sustain it - possibly because it is, but it's nature, unsustainable.
+
+The fact that vo2 max does not relate to recovery heart rate is a bit perplexing to me....there is just a lot of Vo2 max variability and not much HR recovery in one minute following the Wingate - so there is little variability in the Wingate HR 1 minute post.

@@ -133,7 +133,11 @@ qplot(VO2max_watts, VO2max_l_min,data=nhldata,geom=c("point"))
 
 Here we look at the same plot as above but with the points weighted based on player weight. There is a much less clear pattern than the plot of VO2 L/min and VO2 ml/kg/min when weighting based on weight.
 ```{r, echo=FALSE}
-qplot(VO2max_watts, VO2max_l_min,data=nhldata,geom=c("point"),size = Weight_kg)
+qplot(VO2max_watts, VO2max_l_min,data=nhldata,geom=c("point"),size = Weight_kg, color = WingatePeak_Watts)
+```
+
+```{r, echo=FALSE}
+qplot(VO2max_watts, VO2max_l_min,data=nhldata,geom=c("point"),size = Weight_kg, color = SayersPeak_NoPause_watts)
 ```
 
 ##### Wingate power - comparision between Watts and Watts/Kg:
@@ -182,11 +186,20 @@ qplot(PeakWingate_W_kg, VO2max_ml_kg_min,data=nhldata,geom=c("point"))
 ```
 
 3. Compare Sayers peak no pause watts to the peak watts and to VO2 max watts to see if there is any relationships and if jump capacity has an impact 
+
+Expanded and improved upon
 First with straight forward scatter plots for each comparision
 Sayers peak no pause watts to the peak wingate watts - with visualization of the impact of weight
 ```{r, echo=FALSE}
-qplot(SayersPeak_NoPause_watts, WingatePeak_Watts,data=nhldata,geom=c("point"),size = Weight_kg)
+qplot(SayersPeak_NoPause_watts, WingatePeak_Watts,data=nhldata,geom=c("point", "smooth"),method="lm",size = Weight_kg)
 ```
+
+### Linear model
+```{r}
+fit <- lm(WingatePeak_Watts ~ SayersPeak_NoPause_watts, data=nhldata) #fit model
+summary(fit) # show results 
+```
+
 
 Sayers peak no pause watts to the peak aerobic watts -with visualization of the impact of weight
 ```{r, echo=FALSE}
