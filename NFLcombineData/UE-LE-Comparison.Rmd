@@ -1,0 +1,178 @@
+---
+title: "UE v LE Comparison (NFL CombineData)"
+author: "Sean Collins"
+date: "December 14, 2015"
+output: html_document
+---
+Analysis to help a student in Physiology of Exercise lab on their report.
+From the student: "My hypothesis is that athletes with an above average bench press performance will have a below average vertical jump and 40 yard dash performance because the strength needed to have an above average bench press performance would also come with more body mass (basically saying that they would be linemen) and the extra mass would cause a decrease in vertical jump and 40 yard dash performance, while athletes with a below average bench press performance would have an above average vertical jump and 40 yard dash performance because since they lack the strength they lack the size, helping them with the vertical jump and 40 yard dash (receivers, running backs, defensive backs)."" 
+Based on the student's analysis: 12.2% of the athletes were above average in all 3 tests and 7.8% of the athletes were below average in all 3; tested by finding the average, min, and max of all 3, and counting the athletes who were above average in all 3 and below average in all 3
+
+The student limited the data to 2015 draftees and focused on only those that completed all 3 tests (n=180); the analysis the student completed dichotomized the data.
+
+In the analysis below the data will be kept continuous and it will include all athletes (regardless of year) that have all data of the relevant variables.
+
+Raw data comes from the NFL Combine Data (Freely available online): http://nflcombineresults.com/nflcombinedata.php
+
+## Setting working directory and loading required R packages:
+```{r}
+setwd("~/physexlab/NFLcombineData")
+library(dplyr)
+library(ggplot2)
+library(gtools)
+library(pastecs) #For descriptive statistics
+library(psych) #For descriptive statistics
+```
+
+## Loading the data and calculating derived variables:
+
+```{r}
+#Load data
+nfldata<-read.csv("data_cleaned.csv")
+
+#Calculate derived variables
+nfldata<-mutate(nfldata, Weight_kg = Weight_lbs/2.2)
+nfldata <- mutate(nfldata, Height_m = Height_in*0.0254)
+nfldata <- mutate(nfldata, BMI = Weight_kg / (Height_m**2))
+nfldata <- mutate(nfldata, VertJump_m = VertLeap_in*0.0254)
+nfldata <- mutate(nfldata, LewisPower = sqrt(4.9)*Weight_kg*9.81*sqrt(VertJump_m))
+nfldata <- mutate(nfldata, SayersPower = (60.7*(VertJump_m*100))+(45.3*Weight_kg-2055))
+
+#Select variables of interest 
+nfldata<- select(nfldata,Year, POS, Weight_kg, all40yard, VertLeap_in, Bench_Press, LewisPower, SayersPower)
+
+#Keep only complete cases to avoid missing values
+nfldata <- nfldata[complete.cases(nfldata), ]
+```
+
+## Descriptive statistics of relevant data
+```{r}
+options(scipen=100) #supresses scientific notation of output
+options(digits=2) #suggests a limit of 2 significant digits - but it is only a suggestion
+stat.desc(nfldata, basic=F) #runs basic stats
+```
+
+## Plots of Bench Press (Y axis) and Vertical Leap in inches (X Axis)
+Note for both of these scatter plots it is clear there is significant vertical variation (for any particular height jumped players vary significantly in power)
+
+```{r}
+qplot(VertLeap_in, Bench_Press, data = nfldata)
+
+qplot(y=Bench_Press, x=VertLeap_in, data=nfldata, geom=c("point", "smooth"),method="lm",size = Weight_kg)
+
+qplot(y=Bench_Press, x=SayersPower, data=nfldata, geom=c("point", "smooth"),method="lm",size = Weight_kg)
+```
+
+### Lewis Power is an estimate of the Mean Power during the jump
+```{r}
+qplot(VertLeap_in, LewisPower, data = nfldata)
+```
+
+## Why the wide variation?
+In this sample of NFL Combine participants (n = 5394 between 1999 - 2015) there is significant variability in body mass. Also note that the variation is multi modal (there are several peaks)
+
+```{r, echo=FALSE}
+qplot(Weight_kg, data=nfldata, geom="histogram")
+```
+
+## How does this variation map to the bivariate variation we see in the scatter plots?
+To answer this question we can first color each point in the bivariate distribution by body mass. It is clear from these plots that weight has a major influence (not surprising given the equations, and well, physics). 
+
+
+### Sayers Power is an estimate of the Peak Power achieved during the jump 
+```{r}
+qplot(VertLeap_in, SayersPower, data = nfldata, color = nfldata$Weight_kg)
+```
+
+### Lewis Power is an estimate of the Mean Power during the jump
+```{r}
+qplot(VertLeap_in, LewisPower, data = nfldata, color = nfldata$Weight_kg)
+```
+
+### Can this be made more clear? 
+To make what is happening even more clear we can create a factor (category) variable based on the weight distribution. The code below breaks weight into 4 categories based on the distribution.
+```{r}
+nfldata$wt_quantiles<-quantcut(nfldata$Weight_kg, q=seq(0,1,by=0.25), na.rm=TRUE)
+```
+
+We can see that this process does a nice job of partitioning the histogram from earlier into 4 discrete categories of weight. 
+```{r}
+qplot(Weight_kg, data=nfldata, geom="histogram",color=nfldata$wt_quantiles)
+```
+
+Now we can repeat the scatterplots (bivariate distributions) with the point color by these discrete body mass groups:
+
+### Sayers Power is an estimate of the Peak Power achieved during the jump 
+```{r}
+qplot(VertLeap_in, SayersPower, data = nfldata, color = nfldata$wt_quantiles)
+```
+
+### Lewis Power is an estimate of the Mean Power during the jump
+```{r}
+qplot(VertLeap_in, LewisPower, data = nfldata, color = nfldata$wt_quantiles)
+```
+
+It is clear from both of the above graphics that there is a large impact of body mass, and for th most part it simply partitions the data into four separate positive relationships.
+
+
+Sayers:
+```{r}
+qplot(y=SayersPower, x=VertLeap_in, col=factor(wt_quantiles), data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+
+Lewis:
+```{r}
+qplot(y=LewisPower, x=VertLeap_in, col=factor(wt_quantiles), data=nfldata) + stat_smooth(method=lm, formula=y~x)
+```
+
+### From scatter plots to regression:
+
+#### Sayers regression first without controlling for weight; then controlling for weight via quantiles
+
+Not controlling for weight - R^2 = 0.005033
+```{r}
+fitSayers<-lm(formula = SayersPower ~ VertLeap_in, data = nfldata)
+summary(fitSayers)
+```
+
+Controlling for weight - R^2 = 0.8977
+```{r}
+fitSayersWeight<-lm(formula = SayersPower ~ VertLeap_in + wt_quantiles, data = nfldata)
+summary(fitSayersWeight)
+```
+
+#### Lewis regression first without controlling for weight; then controlling for weight via quantiles
+
+Not controlling for weight - R^2 = 0.1125
+```{r}
+fitLewis<-lm(formula = LewisPower ~ VertLeap_in, data = nfldata)
+summary(fitLewis)
+```
+
+Controlling for weight - R^2 = 0.9072
+```{r}
+fitLewisWeight<-lm(formula = LewisPower ~ VertLeap_in + wt_quantiles, data = nfldata)
+summary(fitLewisWeight)
+```
+
+
+### Back full circle
+
+Of course, power is calculated in the Lewis and Sayer equation based on height jumped and weight in Kg; so if we simply add weight in kg as a continuous variable we explain all of the variability because, based on the equation we started with for these power calculations height and weight are the only determinants.
+
+#### Sayers regression first without controlling for weight; then controlling for weight as a continuous variable
+
+Controlling for weight - R^2 = 1.0
+```{r}
+fitSayersWeightKg<-lm(formula = SayersPower ~ VertLeap_in + Weight_kg, data = nfldata)
+summary(fitSayersWeightKg)
+```
+
+#### Lewis regression first without controlling for weight; then controlling for weight as a continuous variable
+
+Controlling for weight - R^2 = 0.9916
+```{r}
+fitLewisWeightKg<-lm(formula = LewisPower ~ VertLeap_in + Weight_kg, data = nfldata)
+summary(fitLewisWeightKg)
+```
