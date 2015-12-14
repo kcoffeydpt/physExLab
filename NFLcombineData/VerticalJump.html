@@ -10,6 +10,7 @@
 
 <meta name="author" content="Sean Collins" />
 
+<meta name="date" content="2015-12-14" />
 
 <title>VerticalJump-Inches-v-Power(NFL CombineData)</title>
 
@@ -63,11 +64,14 @@ img {
 <div id="header">
 <h1 class="title">VerticalJump-Inches-v-Power(NFL CombineData)</h1>
 <h4 class="author"><em>Sean Collins</em></h4>
-<h4 class="date"><em>December 4, 2015</em></h4>
+<h4 class="date"><em>December 14, 2015</em></h4>
 </div>
 
 
-<p>Decided to put together this analysis to demonstrate a few concepts. First, that it is important to analyze vertical jump based on power, not inches or centimeters. This is true due to the wide variation in power associated with the subjects body mass. Second, it is a nice demonstration of what we mean by “explaining variance” in a regression when looking at scatter plots to see bivariate distributions.</p>
+<p>Decided to put together this analysis to demonstrate three concepts for my physiology of exercise class.</p>
+<p>First concept is that it is important to analyze vertical jump based on power, not inches or centimeters. This is true due to the wide variation in power associated with the subjects body mass.</p>
+<p>Second, it is a nice demonstration of what we mean by “explaining variance” in a regression when looking at scatter plots to see bivariate distributions.</p>
+<p>Third, we come full circle and see that if we start with an equation to calculate a dependent variable (in this case power), and we then use the variables from that equation in a regression analysis to predict that dependent variable, we explain all the variance (R^2 = 1.0 (or very near to it likely due to rounding errors)). (Assuming it is a linear equation and you run a linear model.)</p>
 <p>For this demonstration we are going to look at the NFL Combine Data (Freely available online): <a href="http://nflcombineresults.com/nflcombinedata.php" class="uri">http://nflcombineresults.com/nflcombinedata.php</a></p>
 <p>For the sake of anyone interested I have left the “echo” feature on “TRUE” so the r code used to do this analysis is available for anyone interested. If you are not interested you can simply ignore the grey code boxes.</p>
 <p>Prior to any of this work I had to scrap the data from the web page (that is separte code from what is here to save space and time). If anyone is interested in that code just let me know. Here I start with a csv file created from the XML webdata.</p>
@@ -176,8 +180,8 @@ nfldata &lt;- mutate(nfldata, SayersPower = (60.7*(VertJump_m*100))+(45.3*Weight
 </div>
 <div id="from-scatter-plots-to-regression" class="section level3">
 <h3>From scatter plots to regression:</h3>
-<div id="sayers-regression-first-without-controlling-for-weight-then-controlling-for-weight" class="section level4">
-<h4>Sayers regression first without controlling for weight; then controlling for weight</h4>
+<div id="sayers-regression-first-without-controlling-for-weight-then-controlling-for-weight-via-quantiles" class="section level4">
+<h4>Sayers regression first without controlling for weight; then controlling for weight via quantiles</h4>
 <p>Not controlling for weight - R^2 = 0.005033</p>
 <pre class="r"><code>fitSayers&lt;-lm(formula = SayersPower ~ VertLeap_in, data = nfldata)
 summary(fitSayers)</code></pre>
@@ -201,30 +205,33 @@ summary(fitSayers)</code></pre>
 ## Multiple R-squared:  0.005033,   Adjusted R-squared:  0.004801 
 ## F-statistic:  21.7 on 1 and 4290 DF,  p-value: 3.283e-06</code></pre>
 <p>Controlling for weight - R^2 = 0.8977</p>
-<pre class="r"><code>fitSayersWeight&lt;-lm(formula = SayersPower ~ VertLeap_in, data = nfldata)
+<pre class="r"><code>fitSayersWeight&lt;-lm(formula = SayersPower ~ VertLeap_in + wt_quantiles, data = nfldata)
 summary(fitSayersWeight)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = SayersPower ~ VertLeap_in, data = nfldata)
+## lm(formula = SayersPower ~ VertLeap_in + wt_quantiles, data = nfldata)
 ## 
 ## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -2082.71  -541.86    -9.71   529.65  2273.29 
+##     Min      1Q  Median      3Q     Max 
+## -807.22 -167.62  -21.42  152.52 1477.39 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) 7656.220     85.939  89.089  &lt; 2e-16 ***
-## VertLeap_in   12.081      2.593   4.658 3.28e-06 ***
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)            2385.684     39.215   60.84   &lt;2e-16 ***
+## VertLeap_in             141.553      1.086  130.40   &lt;2e-16 ***
+## wt_quantiles(94.1,107]  527.704     10.004   52.75   &lt;2e-16 ***
+## wt_quantiles(107,130]  1234.166     10.241  120.52   &lt;2e-16 ***
+## wt_quantiles(130,175]  2333.012     12.638  184.61   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 718.3 on 4290 degrees of freedom
+## Residual standard error: 230.4 on 4287 degrees of freedom
 ##   (1053 observations deleted due to missingness)
-## Multiple R-squared:  0.005033,   Adjusted R-squared:  0.004801 
-## F-statistic:  21.7 on 1 and 4290 DF,  p-value: 3.283e-06</code></pre>
+## Multiple R-squared:  0.8977, Adjusted R-squared:  0.8976 
+## F-statistic:  9404 on 4 and 4287 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div id="lewis-regression-first-without-controlling-for-weight-then-controlling-for-weight" class="section level4">
-<h4>Lewis regression first without controlling for weight; then controlling for weight</h4>
+<div id="lewis-regression-first-without-controlling-for-weight-then-controlling-for-weight-via-quantiles" class="section level4">
+<h4>Lewis regression first without controlling for weight; then controlling for weight via quantiles</h4>
 <p>Not controlling for weight - R^2 = 0.1125</p>
 <pre class="r"><code>fitLewis&lt;-lm(formula = LewisPower ~ VertLeap_in, data = nfldata)
 summary(fitLewis)</code></pre>
@@ -272,6 +279,62 @@ summary(fitLewisWeight)</code></pre>
 ##   (1053 observations deleted due to missingness)
 ## Multiple R-squared:  0.9072, Adjusted R-squared:  0.9071 
 ## F-statistic: 1.047e+04 on 4 and 4287 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<div id="back-full-circle" class="section level3">
+<h3>Back full circle</h3>
+<p>Of course, power is calculated in the Lewis and Sayer equation based on height jumped and weight in Kg; so if we simply add weight in kg as a continuous variable we explain all of the variability because, based on the equation we started with for these power calculations height and weight are the only determinants.</p>
+<div id="sayers-regression-first-without-controlling-for-weight-then-controlling-for-weight-as-a-continuous-variable" class="section level4">
+<h4>Sayers regression first without controlling for weight; then controlling for weight as a continuous variable</h4>
+<p>Controlling for weight - R^2 = 1.0</p>
+<pre class="r"><code>fitSayersWeightKg&lt;-lm(formula = SayersPower ~ VertLeap_in + Weight_kg, data = nfldata)
+summary(fitSayersWeightKg)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = SayersPower ~ VertLeap_in + Weight_kg, data = nfldata)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -2.770e-12 -5.800e-13 -1.400e-13  2.400e-13  4.477e-10 
+## 
+## Coefficients:
+##               Estimate Std. Error    t value Pr(&gt;|t|)    
+## (Intercept) -2.055e+03  2.188e-12 -9.391e+14   &lt;2e-16 ***
+## VertLeap_in  1.542e+02  4.317e-14  3.571e+15   &lt;2e-16 ***
+## Weight_kg    4.530e+01  8.831e-15  5.130e+15   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 9.172e-12 on 4289 degrees of freedom
+##   (1053 observations deleted due to missingness)
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 1.322e+31 on 2 and 4289 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="lewis-regression-first-without-controlling-for-weight-then-controlling-for-weight-as-a-continuous-variable" class="section level4">
+<h4>Lewis regression first without controlling for weight; then controlling for weight as a continuous variable</h4>
+<p>Controlling for weight - R^2 = 0.9916</p>
+<pre class="r"><code>fitLewisWeightKg&lt;-lm(formula = LewisPower ~ VertLeap_in + Weight_kg, data = nfldata)
+summary(fitLewisWeightKg)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = LewisPower ~ VertLeap_in + Weight_kg, data = nfldata)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -194.519  -14.979    8.258   21.808   65.368 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1.104e+03  7.150e+00  -154.4   &lt;2e-16 ***
+## VertLeap_in  3.468e+01  1.411e-01   245.8   &lt;2e-16 ***
+## Weight_kg    1.932e+01  2.886e-02   669.5   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 29.97 on 4289 degrees of freedom
+##   (1053 observations deleted due to missingness)
+## Multiple R-squared:  0.9916, Adjusted R-squared:  0.9916 
+## F-statistic: 2.528e+05 on 2 and 4289 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
