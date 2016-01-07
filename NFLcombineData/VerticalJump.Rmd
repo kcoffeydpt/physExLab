@@ -1,24 +1,29 @@
 ---
-title: "VerticalJump-Inches-v-Power(NFL CombineData)"
+title: "Vertical Jump Inches-v-Power (NFL Combine Data)"
 author: "Sean Collins"
-date: "December 14, 2015"
+date: "December 9, 2015"
 output: html_document
 ---
-Decided to put together this analysis to demonstrate three concepts for my physiology of exercise class. 
+The purpose of this analysis is to demonstrate three concepts for my physiology of exercise class related to the vertical jump test.
 
-First concept is that it is important to analyze vertical jump based on power, not inches or centimeters. This is true due to the wide variation in power associated with the subjects body mass.
+###Concepts:
 
-Second, it is a nice demonstration of what we mean by "explaining variance" in a regression when looking at scatter plots to see bivariate distributions.
+1. It is important to analyze vertical jump based on power, not inches or centimeters. This is true due to the wide variation in power associated with the subjects body mass.
 
-Third, we come full circle and see that if we start with an equation to calculate a dependent variable (in this case power), and we then use the variables from that equation in a regression analysis to predict that dependent variable, we explain all the variance (R^2 = 1.0 (or very near to it likely due to rounding errors)). (Assuming it is a linear equation and you run a linear model.)
+2. Scatter plots allow us to visualize bivariate distributions, and a regression model helps us to try to identify sources of that variation - in essense to "explain variance"  
 
+3. We come full circle and see that if we start with an equation to calculate a dependent variable (in this case power), and we then use the variables from that equation in a regression analysis to predict that dependent variable, we explain all the variance (R^2 = 1.0 (or very near to it likely due to rounding errors)). (Assuming it is a linear equation and you run a linear model.)
+
+###Data
 For this demonstration we are going to look at the NFL Combine Data (Freely available online): http://nflcombineresults.com/nflcombinedata.php
-
-For the sake of anyone interested I have left the "echo" feature on "TRUE" so the r code used to do this analysis is available for anyone interested. If you are not interested you can simply ignore the grey code boxes.
 
 Prior to any of this work I had to scrap the data from the web page (that is separte code from what is here to save space and time). If anyone is interested in that code just let me know. Here I start with a csv file created from the XML webdata.
 
+####Analysis code
+For the sake of anyone interested I have left the "echo" feature on "TRUE" so the r code used to do this analysis is available for anyone interested. If you are not interested you can simply ignore the grey code boxes.
+
 ## Setting working directory and loading required R packages:
+
 ```{r}
 setwd("~/physexlab/NFLcombineData")
 library(dplyr)
@@ -40,20 +45,22 @@ nfldata <- mutate(nfldata, SayersPower = (60.7*(VertJump_m*100))+(45.3*Weight_kg
 ```
 
 ## Plots of Power (Y axis) and Vertical Leap in inches (X Axis)
-Note for both of these scatter plots it is clear there is significant vertical variation (for any particular height jumped players vary significantly in power)
+Note for both of these scatter plots it is clear there is significant variation (for any particular height jumped players vary significantly in power)
 
-### Sayers Power is an estimate of the Peak Power achieved during the jump 
+### Figure 1. Sayers Power is an estimate of the Peak Power achieved during the jump
 ```{r}
 qplot(VertLeap_in, SayersPower, data = nfldata)
 ```
 
-### Lewis Power is an estimate of the Mean Power during the jump
+### Figure 2. Lewis Power is an estimate of the Mean Power during the jump
 ```{r}
 qplot(VertLeap_in, LewisPower, data = nfldata)
 ```
 
-## Why the wide variation?
+## Why is there so much variation if power when compared to vertical jump height?
 In this sample of NFL Combine participants (n = 5394 between 1999 - 2015) there is significant variability in body mass. Also note that the variation is multi modal (there are several peaks)
+
+### Figure 3. Histogram of body mass
 
 ```{r, echo=FALSE}
 qplot(Weight_kg, data=nfldata, geom="histogram")
@@ -63,12 +70,12 @@ qplot(Weight_kg, data=nfldata, geom="histogram")
 To answer this question we can first color each point in the bivariate distribution by body mass. It is clear from these plots that weight has a major influence (not surprising given the equations, and well, physics). 
 
 
-### Sayers Power is an estimate of the Peak Power achieved during the jump 
+### Figure 4. Sayers Power and vertical height inches, color distribution reflects weight
 ```{r}
 qplot(VertLeap_in, SayersPower, data = nfldata, color = nfldata$Weight_kg)
 ```
 
-### Lewis Power is an estimate of the Mean Power during the jump
+### Figure 5. Lewis Power and vertical height inches, color distribution reflects weight
 ```{r}
 qplot(VertLeap_in, LewisPower, data = nfldata, color = nfldata$Weight_kg)
 ```
@@ -79,33 +86,36 @@ To make what is happening even more clear we can create a factor (category) vari
 nfldata$wt_quantiles<-quantcut(nfldata$Weight_kg, q=seq(0,1,by=0.25), na.rm=TRUE)
 ```
 
+#### Figure 6. Histogram with weight partitioned into quartiles (4 groups each with 25% of the data)
 We can see that this process does a nice job of partitioning the histogram from earlier into 4 discrete categories of weight. 
 ```{r}
 qplot(Weight_kg, data=nfldata, geom="histogram",color=nfldata$wt_quantiles)
 ```
 
+### Scatter plots with weight variance by factor
 Now we can repeat the scatterplots (bivariate distributions) with the point color by these discrete body mass groups:
 
-### Sayers Power is an estimate of the Peak Power achieved during the jump 
+### Figure 7. Sayers Power with weight partitioned into quartiles  
 ```{r}
 qplot(VertLeap_in, SayersPower, data = nfldata, color = nfldata$wt_quantiles)
 ```
 
-### Lewis Power is an estimate of the Mean Power during the jump
+### Figure 8. Lewis Power with weight partitioned into quartiles
 ```{r}
 qplot(VertLeap_in, LewisPower, data = nfldata, color = nfldata$wt_quantiles)
 ```
 
-It is clear from both of the above graphics that there is a large impact of body mass, and for th most part it simply partitions the data into four separate positive relationships.
+###Thoughts
+It is clear from both of the above graphics that there is a large impact of body mass, and for the most part it simply partitions the data into four separate positive relationships.
 
 
-Sayers:
+### Sayers Power with weight partitioned into quartiles with separate OLS lines of best fit
 ```{r}
 qplot(y=SayersPower, x=VertLeap_in, col=factor(wt_quantiles), data=nfldata) + stat_smooth(method=lm, formula=y~x)
 ```
 
 
-Lewis:
+### Lewis Power with weight partitioned into quartiles with separate OLS lines of best fit
 ```{r}
 qplot(y=LewisPower, x=VertLeap_in, col=factor(wt_quantiles), data=nfldata) + stat_smooth(method=lm, formula=y~x)
 ```
@@ -114,13 +124,19 @@ qplot(y=LewisPower, x=VertLeap_in, col=factor(wt_quantiles), data=nfldata) + sta
 
 #### Sayers regression first without controlling for weight; then controlling for weight via quantiles
 
-Not controlling for weight - R^2 = 0.005033
+#####Not controlling for weight - R^2 = 0.005033
+
+This model relates to Figure 1.
+
 ```{r}
 fitSayers<-lm(formula = SayersPower ~ VertLeap_in, data = nfldata)
 summary(fitSayers)
 ```
 
-Controlling for weight - R^2 = 0.8977
+#####Controlling for weight - R^2 = 0.8977
+
+This model relates to Figure 7. 
+
 ```{r}
 fitSayersWeight<-lm(formula = SayersPower ~ VertLeap_in + wt_quantiles, data = nfldata)
 summary(fitSayersWeight)
@@ -128,13 +144,19 @@ summary(fitSayersWeight)
 
 #### Lewis regression first without controlling for weight; then controlling for weight via quantiles
 
-Not controlling for weight - R^2 = 0.1125
+#####Not controlling for weight - R^2 = 0.1125
+
+This model relates to Figure 2.
+
 ```{r}
 fitLewis<-lm(formula = LewisPower ~ VertLeap_in, data = nfldata)
 summary(fitLewis)
 ```
 
-Controlling for weight - R^2 = 0.9072
+#####Controlling for weight - R^2 = 0.9072
+
+This model relates to Figure 8.
+
 ```{r}
 fitLewisWeight<-lm(formula = LewisPower ~ VertLeap_in + wt_quantiles, data = nfldata)
 summary(fitLewisWeight)
@@ -145,18 +167,30 @@ summary(fitLewisWeight)
 
 Of course, power is calculated in the Lewis and Sayer equation based on height jumped and weight in Kg; so if we simply add weight in kg as a continuous variable we explain all of the variability because, based on the equation we started with for these power calculations height and weight are the only determinants.
 
-#### Sayers regression first without controlling for weight; then controlling for weight as a continuous variable
+#### Sayers regression controlling for weight as a continuous variable
 
-Controlling for weight - R^2 = 1.0
+This model relates to Figure 4.
+
+Controlling for weight as a continuous variable - R^2 = 1.0
 ```{r}
 fitSayersWeightKg<-lm(formula = SayersPower ~ VertLeap_in + Weight_kg, data = nfldata)
 summary(fitSayersWeightKg)
 ```
 
-#### Lewis regression first without controlling for weight; then controlling for weight as a continuous variable
+#### Lewis regression controlling for weight as a continuous variable
 
-Controlling for weight - R^2 = 0.9916
+This model relates to Figure 5.
+
+Controlling for weight as a continuous variable - R^2 = 0.9916
 ```{r}
 fitLewisWeightKg<-lm(formula = LewisPower ~ VertLeap_in + Weight_kg, data = nfldata)
 summary(fitLewisWeightKg)
 ```
+
+### Restatement of the Concepts:
+
+1. It is important to analyze vertical jump based on power, not inches or centimeters. This is true due to the wide variation in power associated with the subjects body mass.
+
+2. Scatter plots allow us to visualize bivariate distributions, and a regression model helps us to try to identify sources of that variation - in essense to "explain variance"  
+
+3. We come full circle and see that if we start with an equation to calculate a dependent variable (in this case power), and we then use the variables from that equation in a regression analysis to predict that dependent variable, we explain all the variance (R^2 = 1.0 (or very near to it likely due to rounding errors)). (Assuming it is a linear equation and you run a linear model.)
